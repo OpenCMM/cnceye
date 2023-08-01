@@ -1,5 +1,39 @@
 import cv2
 import numpy as np
+from cnceye.coordinate import Coordinate
+
+
+class Line:
+    def __init__(self, start: Coordinate, end: Coordinate) -> None:
+        self.start = start
+        self.end = end
+
+    def get_slope(self) -> float:
+        return (self.end.y - self.start.y) / (self.end.x - self.start.x)
+
+    def get_intercept(self) -> float:
+        return self.start.y - self.get_slope() * self.start.x
+
+    def get_x(self, y: float) -> float:
+        return (y - self.get_intercept()) / self.get_slope()
+
+    def get_y(self, x: float) -> float:
+        return self.get_slope() * x + self.get_intercept()
+
+    def get_length(self) -> float:
+        return np.sqrt(
+            (self.end.x - self.start.x) ** 2 + (self.end.y - self.start.y) ** 2
+        )
+
+    def get_intersection(self, other) -> tuple:
+        x = (other.get_intercept() - self.get_intercept()) / (
+            self.get_slope() - other.get_slope()
+        )
+        y = self.get_slope() * x + self.get_intercept()
+        return (x, y)
+
+    def __repr__(self) -> str:
+        return f"Line({self.start}, {self.end})"
 
 
 def get_lines(

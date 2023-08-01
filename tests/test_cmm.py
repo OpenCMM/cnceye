@@ -3,7 +3,6 @@ from cnceye.cmm import Cmm
 from cnceye.camera import Camera
 from cnceye.coordinate import Coordinate
 from cnceye.circle import get_circles
-from cnceye.line import get_lines
 
 focal_length = 50.0  # mm
 camera_height = 60.0  # mm
@@ -46,19 +45,16 @@ def test_opencv_coord_1():
     print(f"y: {y_diff_in_micron:.2f} μm")
     assert y_diff_in_micron < 100.0
 
-    lines = get_lines(image)
+    lines = cmm.lines(distance)
     assert len(lines) > 0
     expected_corner = Coordinate(-53.0, 28.0, 10.0)
-    x_pixel, y_pixel = lines[0][0][0], lines[0][0][1]
-    corner_from_img_in_mm = cmm.from_opencv_coord(distance, (x_pixel, y_pixel))
-    x_from_img_in_mm = corner_from_img_in_mm.x
-    y_from_img_in_mm = corner_from_img_in_mm.y
+    corner = lines[0].start
 
-    x_diff_in_micro = diff_in_micron(expected_corner.x, x_from_img_in_mm)
+    x_diff_in_micro = diff_in_micron(expected_corner.x, corner.x)
     print(f"x: {x_diff_in_micro:.2f} μm")
     assert x_diff_in_micro < 100.0
 
-    y_diff_in_micron = diff_in_micron(expected_corner.y, y_from_img_in_mm)
+    y_diff_in_micron = diff_in_micron(expected_corner.y, corner.y)
     print(f"y: {y_diff_in_micron:.2f} μm")
     assert y_diff_in_micron < 100.0
 
@@ -92,19 +88,16 @@ def test_opencv_coord_2():
     print(f"y: {y_diff_in_micron:.2f} μm")
     assert y_diff_in_micron < 100.0
 
-    lines = get_lines(image)
+    lines = cmm.lines(distance)
     assert len(lines) > 0
     expected_corner = Coordinate(-53.0, 28.0, 10.0)
-    x_pixel, y_pixel = lines[0][0][0], lines[0][0][1]
-    corner_from_img_in_mm = cmm.from_opencv_coord(distance, (x_pixel, y_pixel))
-    x_from_img_in_mm = corner_from_img_in_mm.x
-    y_from_img_in_mm = corner_from_img_in_mm.y
+    corner = lines[0].start
 
-    x_diff_in_micro = diff_in_micron(expected_corner.x, x_from_img_in_mm)
+    x_diff_in_micro = diff_in_micron(expected_corner.x, corner.x)
     print(f"x: {x_diff_in_micro:.2f} μm")
     assert x_diff_in_micro < 100.0
 
-    y_diff_in_micron = diff_in_micron(expected_corner.y, y_from_img_in_mm)
+    y_diff_in_micron = diff_in_micron(expected_corner.y, corner.y)
     print(f"y: {y_diff_in_micron:.2f} μm")
     assert y_diff_in_micron < 100.0
 
@@ -138,5 +131,5 @@ def test_opencv_coord_3():
     print(f"y: {y_diff_in_micron:.2f} μm")
     # assert y_diff_in_micron < 100.0
 
-    lines = get_lines(image)
+    lines = cmm.lines(distance)
     assert len(lines) > 0

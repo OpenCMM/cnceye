@@ -2,6 +2,8 @@ from cnceye.coordinate import Coordinate
 from cnceye.camera import Camera
 from .pixel import get_field_of_view, get_pixel_per_mm
 import numpy as np
+from cnceye.line import get_lines, Line
+from typing import List
 
 
 class Cmm:
@@ -36,3 +38,17 @@ class Cmm:
     def from_pixel_length(self, distance: float, pixel_length) -> float:
         pixel_per_mm = self.pixel_per_mm(distance)
         return pixel_length / pixel_per_mm
+
+    def lines(self, distance: float) -> List[Line] or None:
+        line_array = get_lines(self.image)
+        if line_array is None:
+            return None
+
+        lines = []
+        for line in line_array:
+            x1, y1, x2, y2 = line[0]
+            start = self.from_opencv_coord(distance, (x1, y1))
+            end = self.from_opencv_coord(distance, (x2, y2))
+            lines.append(Line(start, end))
+
+        return lines
