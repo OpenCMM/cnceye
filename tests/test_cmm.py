@@ -1,5 +1,5 @@
 import cv2
-from cnceye.cmm import Cmm
+from cnceye.cmm import SingleImage
 from cnceye.camera import Camera
 from cnceye.coordinate import Coordinate
 from cnceye.circle import get_circles
@@ -20,7 +20,7 @@ def test_opencv_coord_1():
     image = cv2.imread("tests/fixtures/output_images/image_1.png")
     center_coordinates = Coordinate(-50.0, 25.0, 60.0)
 
-    cmm = Cmm(image, center_coordinates, camera)
+    cmm = SingleImage(image, center_coordinates, camera)
     circles = get_circles(image, 100, 50, 100, 200)
     (x_pixel, y_pixel, r_pixel) = circles[0][0]
 
@@ -63,7 +63,7 @@ def test_opencv_coord_2():
     image = cv2.imread("tests/fixtures/output_images/image_2.png")
     center_coordinates = Coordinate(-40.0, 25.0, 60.0)
 
-    cmm = Cmm(image, center_coordinates, camera)
+    cmm = SingleImage(image, center_coordinates, camera)
     circles = get_circles(image, 100, 50, 100, 200)
     (x_pixel, y_pixel, r_pixel) = circles[0][0]
 
@@ -106,7 +106,7 @@ def test_opencv_coord_3():
     image = cv2.imread("tests/fixtures/output_images/image_3.png")
     center_coordinates = Coordinate(-30.0, 25.0, 60.0)
 
-    cmm = Cmm(image, center_coordinates, camera)
+    cmm = SingleImage(image, center_coordinates, camera)
     circles = get_circles(image, 100, 50, 100, 200)
     (x_pixel, y_pixel, r_pixel) = circles[0][0]
 

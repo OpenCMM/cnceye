@@ -1,1 +1,1 @@
-from cnceye.cmm.cmm import Cmm  # noqa: F401
+from cnceye.cmm.single import SingleImage  # noqa: F401

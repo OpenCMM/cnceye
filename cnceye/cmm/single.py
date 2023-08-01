@@ -6,7 +6,7 @@ from cnceye.line import get_lines, Line
 from typing import List
 
 
-class Cmm:
+class SingleImage:
     def __init__(self, image, center_coordinate: Coordinate, camera: Camera) -> None:
         self.image = image
         self.center = center_coordinate
