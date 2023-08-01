@@ -108,6 +108,7 @@ def test_opencv_coord_2():
     print(f"y: {y_diff_in_micron:.2f} μm")
     assert y_diff_in_micron < 100.0
 
+
 def test_opencv_coord_3():
     image = cv2.imread("tests/fixtures/output_images/image_3.png")
     center_coordinates = Coordinates((-30.0, 25.0, 60.0))
