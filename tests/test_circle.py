@@ -9,5 +9,5 @@ def test_get_circle():
         image, "tests/fixtures/camera/google-pixel5-5g.json"
     )
 
-    circles = circle.get_circles(undistorted_image)
+    circles = circle.get_circles(undistorted_image, 100, 200, 100, 200)
     assert len(circles) > 0

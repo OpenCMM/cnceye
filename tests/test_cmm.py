@@ -22,7 +22,7 @@ def test_opencv_coord_1():
     center_coordinates = Coordinates((-50.0, 25.0, 60.0))
 
     cmm = Cmm(image, center_coordinates, camera)
-    circles = get_circles(image, param2=30)
+    circles = get_circles(image, 100, 50, 100, 200)
     (x_pixel, y_pixel, r_pixel) = circles[0][0]
 
     # check radius is close to expected radius
@@ -68,7 +68,7 @@ def test_opencv_coord_2():
     center_coordinates = Coordinates((-40.0, 25.0, 60.0))
 
     cmm = Cmm(image, center_coordinates, camera)
-    circles = get_circles(image, param2=30)
+    circles = get_circles(image, 100, 50, 100, 200)
     (x_pixel, y_pixel, r_pixel) = circles[0][0]
 
     # check radius is close to expected radius
@@ -114,7 +114,7 @@ def test_opencv_coord_3():
     center_coordinates = Coordinates((-30.0, 25.0, 60.0))
 
     cmm = Cmm(image, center_coordinates, camera)
-    circles = get_circles(image, param2=30)
+    circles = get_circles(image, 100, 50, 100, 200)
     (x_pixel, y_pixel, r_pixel) = circles[0][0]
 
     # check radius is close to expected radius
