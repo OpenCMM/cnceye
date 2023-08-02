@@ -81,8 +81,8 @@ jobs:
 
       run:  sudo snap install blender --classic
 
-    - name: Install libgl1
-      run: sudo apt-get install libgl1
+    - name: Install libegl1
+      run: sudo apt-get install libegl1
 
     - name: Check blender version
       run: blender --version
