@@ -29,7 +29,7 @@ if __name__ == "__main__":
     light_position = (0, 0, 0.1)
 
     # Create a folder to save the rendered images
-    output_folder = "/home/runner/work/cnceye/cnceye/output_images"
+    output_folder = "/home/runner/work/cnceye/cnceye/output"
     os.makedirs(output_folder, exist_ok=True)
 
     # Render images with different camera and light positions
