@@ -44,12 +44,9 @@ class Line:
             self.get_slope() == other.get_slope()
             and self.get_intercept() == other.get_intercept()
         )
-    
+
     def is_overlapping(self, other: "Line") -> bool:
-        return (
-            self.end.x >= other.start.x
-            or self.start.x <= other.end.x
-        )
+        return self.end.x >= other.start.x or self.start.x <= other.end.x
 
     def connect_lines(self, other: "Line") -> "Line" or None:
         if self.is_same_straight_line(other) and self.is_overlapping(other):

@@ -43,6 +43,7 @@ def test_div_coordinate():
     assert coord3.y == 0.4
     assert coord3.z == 0.5
 
+
 def test_distance_to():
     coord1 = Coordinate(1.0, 2.0, 3.0)
     coord2 = Coordinate(1.0, 5.0, 3.0)

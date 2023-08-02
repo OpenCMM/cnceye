@@ -4,7 +4,8 @@ from cnceye.cmm.single import SingleImage
 import cv2
 import numpy as np
 
-class AllImages():
+
+class AllImages:
     def __init__(self, start: Coordinate, camera: Camera, move: Coordinate) -> None:
         self.center = start
         self.camera = camera
