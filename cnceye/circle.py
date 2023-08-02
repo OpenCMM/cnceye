@@ -3,10 +3,10 @@ import cv2
 
 def get_circles(
     image,
-    min_dist: int = 100,
-    param2: int = 200,
-    min_radius: int = 100,
-    max_radius: int = 200,
+    min_dist: int,
+    param2: int,
+    min_radius: int,
+    max_radius: int,
 ):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -14,7 +14,7 @@ def get_circles(
     circles = cv2.HoughCircles(
         gray,
         cv2.HOUGH_GRADIENT,
-        1.2,
+        1.5,
         min_dist,
         None,
         200,
