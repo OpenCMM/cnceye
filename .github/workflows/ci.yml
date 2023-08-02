@@ -78,7 +78,11 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
     - name: Install Blender
+
       run:  sudo snap install blender --classic
+
+    - name: Install libgl1
+      run: sudo apt-get install libgl1
 
     - name: Check blender version
       run: blender --version
