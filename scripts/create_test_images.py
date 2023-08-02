@@ -1,5 +1,6 @@
 import bpy
 import os
+from time import sleep
 
 
 def render_image(output_path, camera_position, camera_rotation, light_position):
@@ -28,17 +29,21 @@ if __name__ == "__main__":
     light_position = (0, 0, 0.1)
 
     # Create a folder to save the rendered images
-    output_folder = "/path/to/output_images"
+    output_folder = "/home/ubuntu/output_images"
     os.makedirs(output_folder, exist_ok=True)
 
     # Render images with different camera and light positions
-    for i in range(10):
-        camera_position = (
-            camera_position_start[0] + i * 0.1,
-            camera_position_start[1],
-            camera_position_start[2],
-        )
-        output_path = os.path.join(output_folder, f"image_{i + 1}.png")
-        render_image(output_path, camera_position, camera_rotation, light_position)
+    index = 0
+    for i in range(6):
+        for j in range(6):
+            camera_position = (
+                camera_position_start[0] + j * 0.02,
+                camera_position_start[1] - i * 0.01,
+                camera_position_start[2],
+            )
+            output_path = os.path.join(output_folder, f"image_{index}.png")
+            render_image(output_path, camera_position, camera_rotation, light_position)
+            index += 1
+            sleep(0.1)
 
     print("Rendering completed!")

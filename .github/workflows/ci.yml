@@ -70,3 +70,14 @@ jobs:
 
       - name: Run the automated tests
         run: poetry run pytest -v
+
+  blender:
+    name: Blender
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Install Blender
+      run: sudo apt-get install blender
+    - name: Run Blender
+      run: blender "blender/example.blend" --background --python scripts/create_test_images.py
