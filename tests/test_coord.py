@@ -42,3 +42,11 @@ def test_div_coordinate():
     assert coord3.x == 0.25
     assert coord3.y == 0.4
     assert coord3.z == 0.5
+
+def test_distance_to():
+    coord1 = Coordinate(1.0, 2.0, 3.0)
+    coord2 = Coordinate(1.0, 5.0, 3.0)
+    coord3 = Coordinate(4.0, 5.0, 6.0)
+
+    assert coord1.distance_to(coord2) == 3.0
+    assert coord1.distance_to(coord3) == 5.196152422706632

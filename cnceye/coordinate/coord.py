@@ -25,3 +25,6 @@ class Coordinate(np.ndarray):
 
     def __truediv__(self, other):
         return Coordinate(*super().__truediv__(other))
+
+    def distance_to(self, other) -> float:
+        return np.linalg.norm(self - other)
