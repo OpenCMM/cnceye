@@ -82,6 +82,7 @@ jobs:
       run:  sudo snap install blender --classic
 
     - name: Install libegl1
+    # https://stackoverflow.com/a/76272504/13743156
       run: sudo apt-get install libegl1
 
     - name: Check blender version
@@ -91,4 +92,4 @@ jobs:
       run:  |
           mkdir output
           cp blender/example.blend ./output
-          blender "output/example.blend" --background --python scripts/create_test_images.py
+          blender "output/example.blend" --background --python scripts/test.py
