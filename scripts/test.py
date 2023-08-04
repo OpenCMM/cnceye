@@ -34,8 +34,8 @@ if __name__ == "__main__":
 
     # Render images with different camera and light positions
     index = 0
-    for i in range(6):
-        for j in range(6):
+    for i in range(1):
+        for j in range(1):
             camera_position = (
                 camera_position_start[0] + j * 0.02,
                 camera_position_start[1] - i * 0.01,
