@@ -40,7 +40,7 @@ class SingleImage:
         return pixel_length / pixel_per_mm
 
     def lines(self, distance: float) -> List[Line] or None:
-        line_array = get_lines(self.image)
+        line_array = get_lines(self.image, max_line_gap=50)
         if line_array is None:
             return None
 

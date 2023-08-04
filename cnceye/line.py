@@ -14,12 +14,24 @@ class Line:
             self.end = end
 
     def get_slope(self) -> float:
-        if self.end.x == self.start.x:
+        if abs(self.start.x - self.end.x) < 0.1:
             return np.inf
         return (self.end.y - self.start.y) / (self.end.x - self.start.x)
 
+    def get_slope_diff(self, other: "Line") -> float:
+        if self.get_slope() == other.get_slope():
+            return 0
+        return abs(self.get_slope() - other.get_slope())
+
     def get_intercept(self) -> float:
+        if self.get_slope() == np.inf:
+            return np.inf
         return self.start.y - self.get_slope() * self.start.x
+
+    def get_intercept_diff(self, other: "Line") -> float:
+        if self.get_intercept() == other.get_intercept():
+            return 0
+        return abs(self.get_intercept() - other.get_intercept())
 
     def get_x(self, y: float) -> float:
         return (y - self.get_intercept()) / self.get_slope()
@@ -40,13 +52,34 @@ class Line:
         return (x, y)
 
     def is_same_straight_line(self, other: "Line") -> bool:
+        slope_diff = self.get_slope_diff(other)
+        intercept_diff = self.get_intercept_diff(other)
+        if self.get_slope() == np.inf and other.get_slope() == np.inf:
+            return abs(self.start.x - other.start.x) < 0.1
+        return slope_diff < 0.1 and intercept_diff < 0.1
+
+    def is_x_overlapping(self, other: "Line") -> bool:
         return (
-            self.get_slope() == other.get_slope()
-            and self.get_intercept() == other.get_intercept()
+            self.start.x <= other.start.x <= self.end.x
+            or self.start.x <= other.end.x <= self.end.x
+            or other.start.x <= self.start.x <= other.end.x
+            or other.start.x <= self.end.x <= other.end.x
+        )
+
+    def is_y_overlapping(self, other: "Line") -> bool:
+        return (
+            self.start.y <= other.start.y <= self.end.y
+            or self.end.y <= other.start.y <= self.start.y
+            or self.start.y <= other.end.y <= self.end.y
+            or self.end.y <= other.end.y <= self.start.y
+            or other.start.y <= self.start.y <= other.end.y
+            or other.end.y <= self.start.y <= other.start.y
+            or other.start.y <= self.end.y <= other.end.y
+            or other.end.y <= self.start.y <= other.start.y
         )
 
     def is_overlapping(self, other: "Line") -> bool:
-        return self.end.x >= other.start.x or self.start.x <= other.end.x
+        return self.is_x_overlapping(other) and self.is_y_overlapping(other)
 
     def connect_lines(self, other: "Line") -> "Line" or None:
         if self.is_same_straight_line(other) and self.is_overlapping(other):

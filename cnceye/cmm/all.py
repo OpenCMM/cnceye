@@ -6,17 +6,13 @@ import numpy as np
 
 
 class AllImages:
-    def __init__(self, start: Coordinate, camera: Camera, move: Coordinate) -> None:
-        self.center = start
+    def __init__(self, camera: Camera) -> None:
         self.camera = camera
-        self.move = move
         self.previous_lines = []
 
-    def add_image(self, image, distance: float) -> None:
-        single = SingleImage(image, self.center, self.camera)
+    def add_image(self, image, distance: float, center: Coordinate) -> None:
+        single = SingleImage(image, center, self.camera)
         lines = single.lines(distance)
-        print(lines)
-        self.center += self.move
         if lines is None:
             return None
 
