@@ -49,29 +49,37 @@ def test_get_intersection():
     assert line.get_intersection(other) == (0.5, 0.5)
 
 
-def test_is_same_straight_line():
-    line0 = Line(
-        Coordinate(-53.01875, 14.89375, -100), Coordinate(-53.01875, 28.0, -100)
-    )
+def test_is_same_straight_line0():
+    line0 = Line(Coordinate(-53.01875, 14.89375, -10), Coordinate(-53.01875, 28.0, -10))
     line1 = Line(
-        Coordinate(-53.01875, 4.89375, -100), Coordinate(-53.01875, 25.125, -100)
+        Coordinate(-53.01875, 4.89375, -10), Coordinate(-53.01875, 25.125, -10)
     )
     assert line0.is_same_straight_line(line1)
 
 
-def test_is_overlapping():
-    line0 = Line(
-        Coordinate(-53.01875, 14.89375, -100), Coordinate(-53.01875, 28.0, -100)
-    )
+def test_is_same_straight_line1():
+    line0 = Line(Coordinate(-37.775, 20.66875, 10), Coordinate(37.775, 20.66875, 10))
+    line1 = Line(Coordinate(-37.85625, 20.6625, 10), Coordinate(37.85625, 20.6625, 10))
+    assert line0.is_same_straight_line(line1)
+
+
+def test_is_overlapping0():
+    line0 = Line(Coordinate(-53.01875, 14.89375, -10), Coordinate(-53.01875, 28.0, -10))
     line1 = Line(
-        Coordinate(-53.01875, 4.89375, -100), Coordinate(-53.01875, 25.125, -100)
+        Coordinate(-53.01875, 4.89375, -10), Coordinate(-53.01875, 25.125, -10)
     )
     assert line0.is_overlapping(line1)
 
-    line0 = Line(
-        Coordinate(-53.01875, 14.89375, -100), Coordinate(-53.01875, 28.0, -100)
-    )
+    line0 = Line(Coordinate(-53.01875, 14.89375, -10), Coordinate(-53.01875, 28.0, -10))
     line1 = Line(
-        Coordinate(-53.01875, 4.89375, -100), Coordinate(-53.01875, 11.125, -100)
+        Coordinate(-53.01875, 4.89375, -10), Coordinate(-53.01875, 11.125, -10)
     )
     assert not line0.is_overlapping(line1)
+
+
+def test_is_overlapping1():
+    line0 = Line(
+        Coordinate(-42.66875, 4.89375, -10), Coordinate(-42.66875, 15.76875, -10)
+    )
+    line1 = Line(Coordinate(-42.675, 4.89375, -10), Coordinate(-42.675, 15.675, -10))
+    assert line0.is_overlapping(line1)

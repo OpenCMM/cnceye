@@ -32,7 +32,7 @@ class SingleImage:
         return Coordinate(
             opencv_origin.x + opencv_xy[0] / pixel_per_mm,
             opencv_origin.y - opencv_xy[1] / pixel_per_mm,
-            self.center.x - distance,
+            self.center.z - distance,
         )
 
     def from_pixel_length(self, distance: float, pixel_length) -> float:
