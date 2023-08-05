@@ -3,6 +3,7 @@ from cnceye.cmm import AllImages
 from cnceye.camera import Camera
 from cnceye.coordinate import Coordinate
 from tests.utils import diff_in_micron
+
 # import pytest
 
 focal_length = 50.0  # mm
