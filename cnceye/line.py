@@ -55,7 +55,7 @@ class Line:
         slope_diff = self.get_slope_diff(other)
         intercept_diff = self.get_intercept_diff(other)
         if self.get_slope() == np.inf and other.get_slope() == np.inf:
-            return abs(self.start.x - other.start.x) < 0.1
+            return abs(self.start.x - other.start.x) < 0.2
         return slope_diff < 0.1 and intercept_diff < 0.1
 
     def is_x_overlapping(self, other: "Line") -> bool:
@@ -79,6 +79,10 @@ class Line:
         )
 
     def is_overlapping(self, other: "Line") -> bool:
+        if self.get_slope() == np.inf and other.get_slope() == np.inf:
+            return self.is_y_overlapping(other)
+        if self.get_slope() == 0 and other.get_slope() == 0:
+            return self.is_x_overlapping(other)
         return self.is_x_overlapping(other) and self.is_y_overlapping(other)
 
     def connect_lines(self, other: "Line") -> "Line" or None:

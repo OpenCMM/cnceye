@@ -4,6 +4,8 @@ from cnceye.camera import Camera
 from cnceye.coordinate import Coordinate
 from tests.utils import diff_in_micron
 
+# import pytest
+
 focal_length = 50.0  # mm
 camera_height = 60.0  # mm
 object_height = 10.0  # mm
@@ -12,6 +14,7 @@ sensor_width = 36.0  # mm
 camera = Camera(focal_length, sensor_width)
 
 
+# @pytest.mark.skip(reason="need to fix")
 def test_add_image_one_row():
     x_move = Coordinate(20.0, 0.0, 0.0)
     all_images = AllImages(camera)
@@ -45,6 +48,7 @@ def test_add_image_one_row():
     assert third_line_diff_in_micron < 100.0
 
 
+# @pytest.mark.skip(reason="need to fix")
 def test_add_image_two_rows():
     x_move = Coordinate(20.0, 0.0, 0.0)
     y_move = Coordinate(0.0, -10.0, 0.0)
@@ -58,7 +62,8 @@ def test_add_image_two_rows():
             all_images.add_image(image, distance, center)
             index += 1
 
-    print(f"lines: {len(all_images.previous_lines)}")
+    line_count = len(all_images.previous_lines)
+    print(f"line count: {line_count}")
     for line in all_images.previous_lines:
         print(line)
 
