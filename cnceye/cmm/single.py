@@ -3,6 +3,7 @@ from cnceye.camera import Camera
 from .pixel import get_field_of_view, get_pixel_per_mm
 import numpy as np
 from cnceye.line import get_lines, Line
+from cnceye.vertex import get_vertices
 from typing import List
 
 
@@ -52,3 +53,11 @@ class SingleImage:
             lines.append(Line(start, end))
 
         return lines
+
+    def vertex(self, distance: float) -> Coordinate:
+        vertices = get_vertices(self.image)
+        if vertices is None:
+            return None
+
+        x, y = vertices[0][0]
+        return self.from_opencv_coord(distance, (x, y))
