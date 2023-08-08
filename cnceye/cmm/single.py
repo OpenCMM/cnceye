@@ -5,6 +5,9 @@ import numpy as np
 from cnceye.line import get_lines, Line
 from cnceye.vertex import get_vertices
 from typing import List
+import mysql.connector
+from mysql.connector.errors import IntegrityError
+from cnceye.config import MYSQL_CONFIG
 
 
 class SingleImage:
@@ -61,3 +64,25 @@ class SingleImage:
 
         x, y = vertices[0][0]
         return self.from_opencv_coord(distance, (x, y))
+
+    def add_real_coordinate(self, distance):
+        point_id = self.center.unique_key()
+        real_coordinate = self.vertex(distance)
+
+        cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+        cursor = cnx.cursor()
+
+        update_query = """
+            UPDATE point
+            SET rx = %s, ry = %s, rz = %s
+            WHERE point_id = %s
+        """
+        try:
+            data = (real_coordinate.x, real_coordinate.y, real_coordinate.z, point_id)
+            cursor.execute(update_query, data)
+        except IntegrityError:
+            print("Error: unable to update points")
+
+        cnx.commit()
+        cursor.close()
+        cnx.close()

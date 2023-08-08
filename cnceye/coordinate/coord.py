@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class Coordinate(np.ndarray):
     def __new__(cls, x, y, z):
         obj = np.array([x, y, z], dtype=float).view(cls)
@@ -28,3 +27,6 @@ class Coordinate(np.ndarray):
 
     def distance_to(self, other) -> float:
         return np.linalg.norm(self - other)
+
+    def unique_key(self) -> str:
+        return f"{self.x},{self.y},{self.z}"

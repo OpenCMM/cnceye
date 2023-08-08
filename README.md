@@ -1,4 +1,6 @@
 # cnceye
+![Test](https://github.com/OpenCMM/cnceye/actions/workflows/ci.yml/badge.svg)
+
 An image-based CMM (Coordinate Measuring Machine) system for CNC machine tools
 
 ## Simulation with Blender

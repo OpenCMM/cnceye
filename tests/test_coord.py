@@ -51,3 +51,12 @@ def test_distance_to():
 
     assert coord1.distance_to(coord2) == 3.0
     assert coord1.distance_to(coord3) == 5.196152422706632
+
+
+def test_unique_key():
+    coord1 = Coordinate(1.0, 2.0, 3.0)
+    coord1_id = coord1.unique_key()
+    assert coord1_id == "1.0,2.0,3.0"
+    coord2 = Coordinate(1.0, 5.0, 3.0)
+    coord2_id = coord2.unique_key()
+    assert coord2_id == "1.0,5.0,3.0"
