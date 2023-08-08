@@ -1,5 +1,6 @@
 from cnceye.coordinate import Coordinate
 from cnceye.camera import Camera
+from cnceye.line import Line
 from cnceye.cmm.single import SingleImage
 import cv2
 import numpy as np
@@ -9,6 +10,7 @@ class AllImages:
     def __init__(self, camera: Camera) -> None:
         self.camera = camera
         self.previous_lines = []
+        self.lines = []
 
     def add_image(self, image, distance: float, center: Coordinate) -> None:
         single = SingleImage(image, center, self.camera)
@@ -31,6 +33,14 @@ class AllImages:
 
             if is_new_line:
                 self.previous_lines.append(line)
+
+    def add_line(
+        self, start_image: SingleImage, end_image: SingleImage, distance: float
+    ):
+        start = start_image.vertex(distance)
+        end = end_image.vertex(distance)
+        line = Line(start, end)
+        self.lines.append(line)
 
     def save_image(self, path: str) -> None:
         entire_image = np.asarray([[[0, 0, 0]] * 1200] * 1000, dtype=np.uint8)

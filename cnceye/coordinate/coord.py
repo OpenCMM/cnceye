@@ -28,3 +28,6 @@ class Coordinate(np.ndarray):
 
     def distance_to(self, other) -> float:
         return np.linalg.norm(self - other)
+
+    def unique_key(self) -> str:
+        return f"{self.x},{self.y},{self.z}"

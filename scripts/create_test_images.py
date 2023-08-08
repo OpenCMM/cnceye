@@ -23,10 +23,12 @@ def render_image(output_path, camera_position, camera_rotation, light_position):
 
 # Example usage
 if __name__ == "__main__":
+    # set unit to millimeters
+    bpy.context.scene.unit_settings.system = "METRIC"
+    bpy.context.scene.unit_settings.length_unit = "MILLIMETERS"
+
     # Define camera and light positions
-    camera_position_start = (-0.05, 0.025, 0.06)
     camera_rotation = (0.0, 0.0, 0.0)
-    light_position = (0, 0, 0.1)
 
     # Create a folder to save the rendered images
     output_folder = "/path/to/output_images"
@@ -34,13 +36,12 @@ if __name__ == "__main__":
 
     # Render images with different camera and light positions
     index = 0
-    for i in range(6):
-        for j in range(6):
-            camera_position = (
-                camera_position_start[0] + j * 0.02,
-                camera_position_start[1] - i * 0.01,
-                camera_position_start[2],
-            )
+    with open("coordinates.txt") as f:
+        for line in f:
+            xyz = line.strip().split(",")
+            x, y, z = [float(i) / 1000 for i in xyz]
+            camera_position = (x, y, 0.0105)
+            light_position = (x, y, 0.1)
             output_path = os.path.join(output_folder, f"image_{index}.png")
             render_image(output_path, camera_position, camera_rotation, light_position)
             index += 1

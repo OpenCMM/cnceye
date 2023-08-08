@@ -38,6 +38,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Run MySQL
+        run: |
+          docker-compose up -d mysql
+
       - name: Run image
         uses: abatilo/actions-poetry@v2
         with:
@@ -83,7 +87,7 @@ jobs:
 
     - name: Install libegl1
     # https://stackoverflow.com/a/76272504/13743156
-      run: sudo apt-get install libegl1
+      run: sudo apt update -y && sudo apt-get install libegl1
 
     - name: Check blender version
       run: blender --version
