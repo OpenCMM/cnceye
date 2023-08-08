@@ -41,7 +41,6 @@ jobs:
       - name: Run MySQL
         run: |
           docker-compose up -d mysql
-        working-directory: .
 
       - name: Run image
         uses: abatilo/actions-poetry@v2
