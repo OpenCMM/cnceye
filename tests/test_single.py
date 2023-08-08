@@ -14,7 +14,7 @@ camera = Camera(focal_length, sensor_width)
 
 def test_image_0():
     image = cv2.imread("tests/fixtures/images/image_0.png")
-    center_coordinates = Coordinate(-50.0, 65.0, camera_height)
+    center_coordinates = Coordinate(-50.0, 65.0, object_height)
 
     cmm = SingleImage(image, center_coordinates, camera)
     vertex = cmm.vertex(distance)
@@ -25,3 +25,15 @@ def test_image_0():
     print(f"y: {y_diff_in_micron:.2f} μm")
     assert y_diff_in_micron < 1.0
     cmm.add_real_coordinate(distance)
+
+def test_add_real_coordinate():
+    index = 0
+    with open("scripts/coordinates.txt") as f:
+        for line in f:
+            xyz = line.strip().split(",")
+            x, y, z = [float(i) for i in xyz]
+
+            image = cv2.imread(f"tests/fixtures/images/image_{index}.png")
+            center_coordinates = Coordinate(x, y, z)
+            cmm = SingleImage(image, center_coordinates, camera)
+            cmm.add_real_coordinate(distance)

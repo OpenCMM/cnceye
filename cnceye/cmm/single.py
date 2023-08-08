@@ -13,6 +13,7 @@ from cnceye.config import MYSQL_CONFIG
 class SingleImage:
     def __init__(self, image, center_coordinate: Coordinate, camera: Camera) -> None:
         self.image = image
+        # z coordinate is the height of the object
         self.center = center_coordinate
         self.camera = camera
 
@@ -36,7 +37,7 @@ class SingleImage:
         return Coordinate(
             opencv_origin.x + opencv_xy[0] / pixel_per_mm,
             opencv_origin.y - opencv_xy[1] / pixel_per_mm,
-            self.center.z - distance,
+            self.center.z,
         )
 
     def from_pixel_length(self, distance: float, pixel_length) -> float:
@@ -66,8 +67,8 @@ class SingleImage:
         return self.from_opencv_coord(distance, (x, y))
 
     def add_real_coordinate(self, distance):
-        point_id = self.center.unique_key()
         real_coordinate = self.vertex(distance)
+        point_id = self.center.unique_key()
 
         cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
         cursor = cnx.cursor()
