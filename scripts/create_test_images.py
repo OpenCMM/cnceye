@@ -39,7 +39,7 @@ if __name__ == "__main__":
     with open("coordinates.txt") as f:
         for line in f:
             xyz = line.strip().split(",")
-            x, y, z = [float(i)/1000 for i in xyz]
+            x, y, z = [float(i) / 1000 for i in xyz]
             camera_position = (x, y, 0.0105)
             light_position = (x, y, 0.1)
             output_path = os.path.join(output_folder, f"image_{index}.png")

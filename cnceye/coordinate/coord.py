@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Coordinate(np.ndarray):
     def __new__(cls, x, y, z):
         obj = np.array([x, y, z], dtype=float).view(cls)

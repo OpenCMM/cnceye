@@ -26,6 +26,7 @@ def test_image_0():
     assert y_diff_in_micron < 1.0
     cmm.add_real_coordinate(distance)
 
+
 def test_add_real_coordinate():
     index = 0
     with open("scripts/coordinates.txt") as f:
