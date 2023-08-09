@@ -4,6 +4,8 @@ from cnceye.line import Line
 from cnceye.cmm.single import SingleImage
 import cv2
 import numpy as np
+import mysql.connector
+from cnceye.config import MYSQL_CONFIG
 
 
 class AllImages:
@@ -34,17 +36,9 @@ class AllImages:
             if is_new_line:
                 self.previous_lines.append(line)
 
-    def add_line(
-        self, start_image: SingleImage, end_image: SingleImage, distance: float
-    ):
-        start = start_image.vertex(distance)
-        end = end_image.vertex(distance)
-        line = Line(start, end)
-        self.lines.append(line)
-
     def save_image(self, path: str) -> None:
         entire_image = np.asarray([[[0, 0, 0]] * 1200] * 1000, dtype=np.uint8)
-        for line in self.previous_lines:
+        for line in self.lines:
             start = line.start
             end = line.end
             cv2.line(
@@ -67,3 +61,47 @@ class AllImages:
                 1,
             )
         cv2.imwrite(path, entire_image)
+
+    def fetch_real_coordinates(self) -> dict:
+        cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+        cursor = cnx.cursor()
+
+        real_coordinates = {}
+        query = """
+            SELECT point_id, x, y, z
+            FROM point
+        """
+        cursor.execute(query)
+        for r in cursor:
+            real_coordinates[r[0]] = Coordinate(r[1], r[2], r[3])
+
+        cursor.close()
+        cnx.close()
+
+        return real_coordinates
+
+    def fetch_lines(self):
+        cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+        cursor = cnx.cursor()
+
+        lines = []
+        query = """
+            SELECT a, b
+            FROM line
+        """
+        cursor.execute(query)
+        for line in cursor:
+            lines.append((line[0], line[1]))
+
+        cursor.close()
+        cnx.close()
+
+        return lines
+
+    def add_lines(self):
+        real_coordinates = self.fetch_real_coordinates()
+        lines = self.fetch_lines()
+        for line in lines:
+            start = real_coordinates[line[0]]
+            end = real_coordinates[line[1]]
+            self.lines.append(Line(start, end))

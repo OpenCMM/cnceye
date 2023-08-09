@@ -1,5 +1,5 @@
 import cv2
-from cnceye.cmm import AllImages, SingleImage
+from cnceye.cmm import AllImages
 from cnceye.camera import Camera
 from cnceye.coordinate import Coordinate
 from tests.utils import diff_in_micron
@@ -122,19 +122,15 @@ def test_add_image_all_rows():
     assert third_line_diff_in_micron < 100.0
 
 
-@pytest.mark.skip(reason="need to fix")
-def test_add_line():
-    start_img = cv2.imread("tests/fixtures/output_images/image_0.png")
-    start_center = Coordinate(-50.0, 25.0, 60.0)
-
-    end_img = cv2.imread("tests/fixtures/output_images/image_5.png")
-    end_center = Coordinate(50.0, 25.0, 60.0)
-
-    start_image = SingleImage(start_img, start_center, camera)
-    end_image = SingleImage(end_img, end_center, camera)
-
+def test_fetch_real_coordinates():
     all_images = AllImages(camera)
-    all_images.add_line(start_image, end_image, distance)
+    all_images.fetch_real_coordinates()
 
-    assert len(all_images.lines) == 1
-    print(all_images.lines[0])
+def test_fetch_lines():
+    all_images = AllImages(camera)
+    all_images.fetch_lines()
+
+def test_add_line():
+    all_images = AllImages(camera)
+    all_images.add_lines()
+    all_images.save_image("output/lines.png")
