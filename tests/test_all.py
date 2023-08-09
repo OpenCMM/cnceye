@@ -126,9 +126,11 @@ def test_fetch_real_coordinates():
     all_images = AllImages(camera)
     all_images.fetch_real_coordinates()
 
+
 def test_fetch_lines():
     all_images = AllImages(camera)
     all_images.fetch_lines()
+
 
 def test_add_line():
     all_images = AllImages(camera)

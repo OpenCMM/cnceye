@@ -1,7 +1,9 @@
 # cnceye
 ![Test](https://github.com/OpenCMM/cnceye/actions/workflows/ci.yml/badge.svg)
 
-An image-based CMM (Coordinate Measuring Machine) system for CNC machine tools
+Cnceye indentifies the actual coordiantes of each vertex of a product from a image.
+From there, it will measure the dimensions of the product. Our goal is to make this process as easy as possible with less than 1 micro precision.
+
 
 ## Simulation with Blender
 Create test data

@@ -50,7 +50,7 @@ class AllImages:
             )
             cv2.putText(
                 entire_image,
-                f"{line.get_length():.2f}",
+                f"{line.get_length():.3f}",
                 (
                     int((start.x + end.x + 200) * 5 / 2),
                     int((-start.y - end.y + 200) * 5 / 2),
