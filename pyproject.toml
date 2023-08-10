@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "cnceye"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["yuichiroaoki <45054071+yuichiroaoki@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 opencv-python-headless = "^4.8.0.74"
 mysql-connector-python = "^8.1.0"
 
