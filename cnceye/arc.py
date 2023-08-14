@@ -12,7 +12,6 @@ class Arc:
         return f"Arc(radius={self.radius}, center={self.center})"
 
 
-
 def point_id(point: list):
     return f"{point[0]},{point[1]},{point[2]}"
 

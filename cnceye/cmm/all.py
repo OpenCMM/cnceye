@@ -146,7 +146,6 @@ class AllImages:
 
         return arcs
 
-
     def add_arcs(self):
         real_coordinates = self.fetch_real_coordinates()
         arcs = self.fetch_arcs()
