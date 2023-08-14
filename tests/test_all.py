@@ -136,3 +136,21 @@ def test_add_line():
     all_images = AllImages(camera)
     all_images.add_lines()
     all_images.save_image("output/lines.png")
+
+
+def test_fetch_arcs():
+    all_images = AllImages(camera)
+    all_images.fetch_arcs()
+
+
+def test_add_arcs():
+    all_images = AllImages(camera)
+    all_images.add_arcs()
+    all_images.save_image("output/arcs.png")
+
+
+def test_both_line_and_arc():
+    all_images = AllImages(camera)
+    all_images.add_lines()
+    all_images.add_arcs()
+    all_images.save_image("output/both.png")
