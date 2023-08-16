@@ -41,7 +41,7 @@ def test_add_real_coordinate():
             index += 1
 
 
-def test_add_real_coordinate_with_real_images():
+def test_add_real_coordinate_with_real_images_4_corners():
     index = 0
     with open("scripts/test.txt") as f:
         for line in f:
@@ -49,6 +49,20 @@ def test_add_real_coordinate_with_real_images():
             x, y, z = [float(i) for i in xyz]
 
             image = cv2.imread(f"tests/fixtures/images/test{index}.jpg")
+            center_coordinates = Coordinate(x, y, z)
+            cmm = SingleImage(image, center_coordinates, camera)
+            cmm.add_real_coordinate(distance)
+            index += 1
+
+
+def test_add_real_coordinate_with_real_images():
+    index = 0
+    with open("scripts/coordinates.txt") as f:
+        for line in f:
+            xyz = line.strip().split(",")
+            x, y, z = [float(i) for i in xyz]
+
+            image = cv2.imread(f"tests/fixtures/real_images/{index}.jpg")
             center_coordinates = Coordinate(x, y, z)
             cmm = SingleImage(image, center_coordinates, camera)
             cmm.add_real_coordinate(distance)

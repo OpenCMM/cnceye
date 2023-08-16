@@ -74,18 +74,3 @@ def pick_arc_points(arc_points: list):
     c = arc_points[one_third * 2 - 1]
 
     return a, b, c, d
-
-
-def to_arc_list(arc_points: list):
-    a, b, c, d = pick_arc_points(arc_points)
-    radius, center = get_arc_info(arc_points)
-    return [
-        point_id(a),
-        point_id(b),
-        point_id(c),
-        point_id(d),
-        float(radius),
-        float(center[0]),
-        float(center[1]),
-        float(center[2]),
-    ]
