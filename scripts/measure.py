@@ -64,6 +64,22 @@ start_point = move_start_point(start_point, (0.0, 0.05, 0.0), 10.0)
 start_point = move_start_point(start_point, (-0.6, 0.0, 0.0), 48.5)
 start_point = move_start_point(start_point, (0.0, -0.05, 0.0), 10.0)
 
+# left-bottom corner to left-top corner
+start_point = move_start_point(start_point, (-0.5, 0.0, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.0, 0.5, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.05, 0.0, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.0, 0.6, 0.0), 62.0)
+start_point = move_start_point(start_point, (-0.05, 0.0, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.0, 0.6, 0.0), 62.0)
+start_point = move_start_point(start_point, (0.05, 0.0, 0.0), 10.0)
+
+# left-top corner to right-top corner
+start_point = move_start_point(start_point, (0.0, 0.05, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.6, 0.0, 0.0), 48.5)
+start_point = move_start_point(start_point, (0.0, -0.05, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.6, 0.0, 0.0), 48.5)
+start_point = move_start_point(start_point, (0.0, 0.05, 0.0), 10.0)
+
 # save as csv
 with open("lines.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile, delimiter=",")

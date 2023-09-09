@@ -22,11 +22,16 @@ def test_find_line():
     filepath = "tests/fixtures/sensor/line.csv"
     lines = find.find_lines(filepath, 3)
     assert len(lines) == 1
-    print(lines)
+    line = lines[0]
+    expected_x = 50.0
+    for row in line:
+        x = float(row[0])
+        assert x == expected_x
 
 
 def test_find_lines():
     filepath = "tests/fixtures/sensor/lines.csv"
     lines = find.find_lines(filepath, 3)
-    assert len(lines) == 2
-    print(lines)
+    assert len(lines) == 4
+    for line in lines:
+        print(line)
