@@ -19,7 +19,7 @@ data = []
 # Ensure the object has a mesh
 assert obj.type == "MESH"
 
-for i in range(1050):
+for i in range(200):
     distance = None
     # Calculate the intersection point with the face
     (hit, intersection_point, *_) = obj.ray_cast(start_point, ray_direction)
@@ -38,12 +38,10 @@ for i in range(1050):
     xyz = [round(x * 1000, 3) for x in xyz]
 
     data.append([*xyz, distance])
-    # move start_point
-    start_point = start_point + Vector((-0.0001, 0, 0.0))
+    # move start_point by 50μm
+    start_point = start_point + Vector((-0.00005, 0, 0.0))
 
 # save as csv
 with open("output.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile, delimiter=",")
-    writer.writerow(["x", "y", "z", "distance"])
-    for row in data:
-        writer.writerow(row)
+    writer.writerows(data)
