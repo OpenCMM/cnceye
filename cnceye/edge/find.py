@@ -29,13 +29,14 @@ def check_if_edge_is_found(
     return False
 
 
-def find_line(filepath: str, edge_count: int, minimal_diff: float = 5.0):
+def find_lines(filepath: str, edge_count: int, minimal_diff: float = 5.0):
     # read csv
     with open(filepath, newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         data = list(reader)
 
     lines = []
+    line = []
     previous_distance = ""
     previous_row = None
 
@@ -44,11 +45,14 @@ def find_line(filepath: str, edge_count: int, minimal_diff: float = 5.0):
         distance = row[3]
         if check_if_edge_is_found(distance, previous_distance, minimal_diff):
             if distance == "":
-                lines.append(previous_row)
+                line.append(previous_row)
             else:
-                lines.append(row)
+                line.append(row)
 
-            if len(lines) == edge_count:
-                return lines
+            if len(line) == edge_count:
+                lines.append(line)
+                line = []
         previous_distance = distance
         previous_row = row
+
+    return lines

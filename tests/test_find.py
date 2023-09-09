@@ -20,5 +20,13 @@ def test_check_if_edge_is_found():
 
 def test_find_line():
     filepath = "tests/fixtures/sensor/line.csv"
-    line = find.find_line(filepath, 3)
-    print(line)
+    lines = find.find_lines(filepath, 3)
+    assert len(lines) == 1
+    print(lines)
+
+
+def test_find_lines():
+    filepath = "tests/fixtures/sensor/lines.csv"
+    lines = find.find_lines(filepath, 3)
+    assert len(lines) == 2
+    print(lines)

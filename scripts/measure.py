@@ -50,13 +50,21 @@ def move_start_point(_start_point, step, total_distance_to_move: float):
     return _start_point
 
 
+# left-top corner to right-bottom corner
 start_point = move_start_point(start_point, (-0.05, 0.0, 0.0), 10.0)
-start_point = move_start_point(start_point, (0.0, -0.6, 0.0), 60.0)
+start_point = move_start_point(start_point, (0.0, -0.6, 0.0), 62.0)
 start_point = move_start_point(start_point, (0.05, 0.0, 0.0), 10.0)
-start_point = move_start_point(start_point, (0.0, -0.6, 0.0), 60.0)
+start_point = move_start_point(start_point, (0.0, -0.6, 0.0), 62.0)
 start_point = move_start_point(start_point, (-0.05, 0.0, 0.0), 10.0)
 
+# right-bottom corner to left-bottom corner
+start_point = move_start_point(start_point, (0.0, -0.05, 0.0), 10.0)
+start_point = move_start_point(start_point, (-0.6, 0.0, 0.0), 48.5)
+start_point = move_start_point(start_point, (0.0, 0.05, 0.0), 10.0)
+start_point = move_start_point(start_point, (-0.6, 0.0, 0.0), 48.5)
+start_point = move_start_point(start_point, (0.0, -0.05, 0.0), 10.0)
+
 # save as csv
-with open("line.csv", "w", newline="") as csvfile:
+with open("lines.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile, delimiter=",")
     writer.writerows(data)
