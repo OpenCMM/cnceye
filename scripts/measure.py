@@ -20,33 +20,17 @@ data = []
 assert obj.type == "MESH"
 
 
-def move_x_axis(_start_point, step: float):
-    for i in range(200):
-        distance = None
-        # Calculate the intersection point with the face
-        (hit, intersection_point, *_) = obj.ray_cast(_start_point, ray_direction)
-
-        if hit:
-            distance = _start_point[2] - intersection_point[2]
-            # distance = (start_point - intersection_point).length
-
-            # intersection_point in world space
-            # intersection_point = intersection_point + obj.location
-
-        # sensor_position in world space
-        sensor_position = _start_point + obj.location
-        # m to mm and round to 3 decimal places
-        xyz = [sensor_position.x, sensor_position.y, sensor_position.z]
-        xyz = [round(x * 1000, 3) for x in xyz]
-
-        data.append([*xyz, distance])
-        _start_point = _start_point + Vector((step, 0, 0.0))
-
-    return _start_point
-
-
-def move_y_axis(_start_point, step: float):
-    for i in range(100):
+def move_start_point(_start_point, step, total_distance_to_move: float):
+    """
+    Move the start point to the given direction
+    _start_point: Vector
+    step: tuple (x, y, z) in mm
+    total_distance_to_move: float in mm
+    return Vector
+    """
+    one_step_distance = Vector(step).length
+    loop_count = int(total_distance_to_move // one_step_distance)
+    for _ in range(loop_count):
         distance = None
         # Calculate the intersection point with the face
         (hit, intersection_point, *_) = obj.ray_cast(_start_point, ray_direction)
@@ -61,16 +45,16 @@ def move_y_axis(_start_point, step: float):
         xyz = [round(x * 1000, 3) for x in xyz]
 
         data.append([*xyz, distance])
-        _start_point = _start_point + Vector((0, step, 0.0))
+        _start_point = _start_point + Vector(tuple([x / 1000 for x in step]))
 
     return _start_point
 
 
-start_point = move_x_axis(start_point, -0.00005)
-start_point = move_y_axis(start_point, -0.0006)
-start_point = move_x_axis(start_point, 0.00005)
-start_point = move_y_axis(start_point, -0.0006)
-start_point = move_x_axis(start_point, -0.00005)
+start_point = move_start_point(start_point, (-0.05, 0.0, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.0, -0.6, 0.0), 60.0)
+start_point = move_start_point(start_point, (0.05, 0.0, 0.0), 10.0)
+start_point = move_start_point(start_point, (0.0, -0.6, 0.0), 60.0)
+start_point = move_start_point(start_point, (-0.05, 0.0, 0.0), 10.0)
 
 # save as csv
 with open("line.csv", "w", newline="") as csvfile:
