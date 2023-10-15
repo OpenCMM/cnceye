@@ -7,6 +7,12 @@ def test_find_edge():
     print(edge_position)
 
 
+def test_find_edge_from_sqlite():
+    db_path = "tests/fixtures/db/listener.db"
+    edges = find.find_edges_from_sqlite(db_path, 100.0)
+    print(edges)
+    assert len(edges) == 14 
+
 def test_check_if_edge_is_found():
     assert find.check_if_edge_is_found("", "") is False
     assert find.check_if_edge_is_found("", 100.0) is True

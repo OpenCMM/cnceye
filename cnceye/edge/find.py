@@ -1,4 +1,5 @@
 import csv
+import sqlite3
 
 
 def find_edge(filepath: str, minimal_diff: float = 5.0):
@@ -15,6 +16,23 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         if check_if_edge_is_found(distance, previous_distance, minimal_diff):
             return row
         previous_distance = distance
+
+
+def find_edges_from_sqlite(database_path: str, minimal_diff: float = 5.0):
+    conn = sqlite3.connect(database_path)
+    cur = conn.cursor()
+    previous_distance = ""
+    edges = []
+    for row in cur.execute("SELECT * FROM coord"):
+        # x, y, z, distance
+        distance = row[4]
+        if check_if_edge_is_found(distance, previous_distance, minimal_diff):
+            edges.append(row)
+        previous_distance = distance
+
+    # remove the starting point
+    edges.pop(0)
+    return edges
 
 
 def check_if_edge_is_found(
