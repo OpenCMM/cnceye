@@ -17,7 +17,17 @@ def test_find_edge_from_sqlite():
 def test_add_measured_edge_coord():
     db_path = "tests/fixtures/db/listener.db"
     measured_edges = find.find_edges_from_sqlite(db_path, 100.0)
-    edge_data = find.get_edge_data()
+    edge_data = [
+        (1, 6, -50.0, 0.0, 10.0),
+        (2, 8, -25.0, 38.0, 10.0),
+        (3, 2, 0.0, -65.0, 10.0),
+        (4, 3, 0.0, 23.0, 10.0),
+        (5, 4, 0.0, 53.0, 10.0),
+        (6, 1, 0.0, 65.0, 10.0),
+        (7, 7, 25.0, 38.0, 10.0),
+        (8, 5, 50.0, 0.0, 10.0),
+    ]
+    # edge_data = find.get_edge_data()
     update_list = find.identify_close_edge(edge_data, measured_edges)
     find.add_measured_edge_coord(update_list)
 
