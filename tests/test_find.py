@@ -9,9 +9,17 @@ def test_find_edge():
 
 def test_find_edge_from_sqlite():
     db_path = "tests/fixtures/db/listener.db"
-    edges = find.find_edges_from_sqlite(db_path, 100.0)
-    print(edges)
-    assert len(edges) == 16
+    measured_edges = find.find_edges_from_sqlite(db_path, 100.0)
+    print(measured_edges)
+    assert len(measured_edges) == 16
+
+
+def test_add_measured_edge_coord():
+    db_path = "tests/fixtures/db/listener.db"
+    measured_edges = find.find_edges_from_sqlite(db_path, 100.0)
+    edge_data = find.get_edge_data()
+    update_list = find.identify_close_edge(edge_data, measured_edges)
+    find.add_measured_edge_coord(update_list)
 
 
 def test_check_if_edge_is_found():
