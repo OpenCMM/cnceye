@@ -1,15 +1,5 @@
-from cnceye.coordinate import Coordinate
 import numpy as np
 from scipy.optimize import least_squares
-
-
-class Arc:
-    def __init__(self, radius: float, center: Coordinate) -> None:
-        self.radius = radius
-        self.center = center
-
-    def __repr__(self) -> str:
-        return f"Arc(radius={self.radius}, center={self.center})"
 
 
 def point_id(point: list):
