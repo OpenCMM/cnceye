@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "cnceye"
-version = "0.3.0"
-description = ""
+version = "0.3.1"
+description = "CMM python library"
+license = "MIT"
 authors = ["yuichiroaoki <45054071+yuichiroaoki@users.noreply.github.com>"]
 readme = "README.md"
+repository = "https://github.com/OpenCMM/cnceye"
+keywords = ["cnc", "cmm", "milling", "gcode"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"

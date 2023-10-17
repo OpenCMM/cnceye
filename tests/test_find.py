@@ -1,4 +1,34 @@
+from cnceye.config import MYSQL_CONFIG
 from cnceye.edge import find
+import mysql.connector
+import sqlite3
+
+
+def copy_sqlite_db_to_mysql():
+    db_path = "tests/fixtures/db/listener.db"
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    query = "SELECT x,y,z,distance FROM coord"
+    data = []
+    for row in cur.execute(query):
+        data.append(row)
+    cur.close()
+    conn.close()
+
+    mysql_conn = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+    mysql_cur = mysql_conn.cursor()
+    mysql_cur.executemany(
+        "INSERT INTO sensor(x, y, z, distance) VALUES (%s, %s, %s, %s)", data
+    )
+    mysql_conn.commit()
+    mysql_cur.close()
+    mysql_conn.close()
+
+
+def test_find_edges():
+    copy_sqlite_db_to_mysql()
+    measured_edges = find.find_edges()
+    assert len(measured_edges) == 16
 
 
 def test_find_edge():
@@ -15,8 +45,7 @@ def test_find_edge_from_sqlite():
 
 
 def test_add_measured_edge_coord():
-    db_path = "tests/fixtures/db/listener.db"
-    measured_edges = find.find_edges_from_sqlite(db_path, 100.0)
+    measured_edges = find.find_edges()
     edge_data = [
         (1, 6, -50.0, 0.0, 10.0),
         (2, 8, -25.0, 38.0, 10.0),

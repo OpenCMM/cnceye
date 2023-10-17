@@ -22,6 +22,29 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         previous_distance = distance
 
 
+def find_edges(minimal_diff: float = 5.0, mysql_config=MYSQL_CONFIG):
+    cnx = mysql.connector.connect(**mysql_config, database="coord")
+    cursor = cnx.cursor()
+    query = "SELECT * FROM sensor"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    previous_distance = ""
+    edges = []
+    for row in rows:
+        # x, y, z, distance
+        distance = row[4]
+        if check_if_edge_is_found(distance, previous_distance, minimal_diff):
+            edges.append(row)
+        previous_distance = distance
+
+    # remove the starting point
+    edges.pop(0)
+
+    cursor.close()
+    cnx.close()
+    return edges
+
+
 def find_edges_from_sqlite(database_path: str, minimal_diff: float = 5.0):
     conn = sqlite3.connect(database_path)
     cur = conn.cursor()
@@ -80,8 +103,8 @@ def find_lines(filepath: str, edge_count: int, minimal_diff: float = 5.0):
     return lines
 
 
-def get_edge_data():
-    cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+def get_edge_data(mysql_config=MYSQL_CONFIG):
+    cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "SELECT id,side_id,x,y,z FROM edge"
     cursor.execute(query)
@@ -110,8 +133,8 @@ def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
     return update_list
 
 
-def add_measured_edge_coord(edge_list: list):
-    cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+def add_measured_edge_coord(edge_list: list, mysql_config=MYSQL_CONFIG):
+    cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     insert_query = "UPDATE edge SET rx = %s, ry = %s, rz = %s WHERE id = %s"
     try:
@@ -121,3 +144,13 @@ def add_measured_edge_coord(edge_list: list):
     cnx.commit()
     cursor.close()
     cnx.close()
+
+
+def process_edges():
+    """
+    Identify the edges from the sensor data and add the coordinates to the database
+    """
+    measured_edges = find_edges()
+    edge_data = get_edge_data()
+    update_list = identify_close_edge(edge_data, measured_edges)
+    add_measured_edge_coord(update_list)
