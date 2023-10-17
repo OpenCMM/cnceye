@@ -17,15 +17,19 @@ def copy_sqlite_db_to_mysql():
 
     mysql_conn = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
     mysql_cur = mysql_conn.cursor()
-    mysql_cur.executemany("INSERT INTO sensor(x, y, z, distance) VALUES (%s, %s, %s, %s)", data)
+    mysql_cur.executemany(
+        "INSERT INTO sensor(x, y, z, distance) VALUES (%s, %s, %s, %s)", data
+    )
     mysql_conn.commit()
     mysql_cur.close()
     mysql_conn.close()
+
 
 def test_find_edges():
     copy_sqlite_db_to_mysql()
     measured_edges = find.find_edges()
     assert len(measured_edges) == 16
+
 
 def test_find_edge():
     filepath = "tests/fixtures/sensor/one_edge.csv"
