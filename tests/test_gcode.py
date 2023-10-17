@@ -12,5 +12,4 @@ def load_gcode(filepath: str):
 def test_load_gcode():
     filepath = "tests/fixtures/gcode/edge.gcode"
     gcode = load_gcode(filepath)
-    breakpoint()
     assert len(gcode) == 16
