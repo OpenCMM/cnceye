@@ -3,7 +3,6 @@ Simulate the measurement of the 3D model by moving the sensor with G-code
 """
 import bpy
 from mathutils import Vector
-import sqlite3
 import csv
 import sys
 
@@ -91,8 +90,7 @@ for row in gcode:
     z = 206.0  # ignore z
     start_point = move_start_point(start_point, (x, y, z), feedrate)
 
-conn = sqlite3.connect("listener.db")
-cur = conn.cursor()
-cur.executemany("INSERT INTO coord(x, y, z, distance) VALUES (?, ?, ?, ?)", data)
-conn.commit()
-conn.close()
+# save as csv
+with open("demo.csv", "w", newline="") as csvfile:
+    writer = csv.writer(csvfile, delimiter=",")
+    writer.writerows(data)

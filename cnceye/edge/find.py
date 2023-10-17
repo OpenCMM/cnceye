@@ -136,9 +136,9 @@ def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
 def add_measured_edge_coord(edge_list: list, mysql_config=MYSQL_CONFIG):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
-    insert_query = "UPDATE edge SET rx = %s, ry = %s, rz = %s WHERE id = %s"
+    query = "UPDATE edge SET rx = %s, ry = %s, rz = %s WHERE id = %s"
     try:
-        cursor.executemany(insert_query, edge_list)
+        cursor.executemany(query, edge_list)
     except IntegrityError:
         print("Error: unable to import lines")
     cnx.commit()
