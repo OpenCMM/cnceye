@@ -21,6 +21,28 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
             return row
         previous_distance = distance
 
+def find_edges(minimal_diff: float = 5.0):
+    cnx = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
+    cursor = cnx.cursor()
+    query = "SELECT * FROM sensor"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    previous_distance = ""
+    edges = []
+    for row in rows:
+        # x, y, z, distance
+        distance = row[4]
+        if check_if_edge_is_found(distance, previous_distance, minimal_diff):
+            edges.append(row)
+        previous_distance = distance
+
+    # remove the starting point
+    edges.pop(0)
+
+    cursor.close()
+    cnx.close()
+    return edges
+
 
 def find_edges_from_sqlite(database_path: str, minimal_diff: float = 5.0):
     conn = sqlite3.connect(database_path)
