@@ -10,7 +10,6 @@ keywords = ["cnc", "cmm", "milling", "gcode"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-opencv-python-headless = "^4.8.0.74"
 mysql-connector-python = "^8.1.0"
 scipy = "^1.11.1"
 

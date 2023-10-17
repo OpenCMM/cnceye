@@ -95,5 +95,5 @@ jobs:
     - name: Run Blender
       run:  |
           mkdir output
-          cp blender/example.blend ./output
-          blender "output/example.blend" --background --python scripts/test.py
+          cp blender/measure.blend ./output
+          blender "output/measure.blend" --background --python scripts/test.py -- tests/fixtures/gcode/edge.gcode
