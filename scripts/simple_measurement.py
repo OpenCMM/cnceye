@@ -28,8 +28,7 @@ def load_gcode(filepath: str):
     with open(filepath, newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=" ")
         gcode = list(reader)
-    gcode.pop(0)
-    gcode.pop()
+    gcode = gcode[2:-2]
     return gcode
 
 
