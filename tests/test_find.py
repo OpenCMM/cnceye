@@ -28,7 +28,7 @@ def copy_sqlite_db_to_mysql():
 def test_find_edges():
     copy_sqlite_db_to_mysql()
     measured_edges = find.find_edges()
-    assert len(measured_edges) == 16
+    assert len(measured_edges) == 36
 
 
 def test_find_edge():
@@ -41,20 +41,28 @@ def test_find_edge_from_sqlite():
     db_path = "tests/fixtures/db/listener.db"
     measured_edges = find.find_edges_from_sqlite(db_path, 100.0)
     print(measured_edges)
-    assert len(measured_edges) == 16
+    assert len(measured_edges) == 36
 
 
 def test_add_measured_edge_coord():
     measured_edges = find.find_edges()
     edge_data = [
-        (1, 6, -50.0, 0.0, 10.0),
-        (2, 8, -25.0, 38.0, 10.0),
-        (3, 2, 0.0, -65.0, 10.0),
-        (4, 3, 0.0, 23.0, 10.0),
-        (5, 4, 0.0, 53.0, 10.0),
-        (6, 1, 0.0, 65.0, 10.0),
-        (7, 7, 25.0, 38.0, 10.0),
-        (8, 5, 50.0, 0.0, 10.0),
+        (1, 6, -50.0, -21.667, 10.0),
+        (2, 6, -50.0, 21.667, 10.0),
+        (3, 8, -25.0, 34.667, 10.0),
+        (4, 8, -25.0, 41.333, 10.0),
+        (5, 2, -16.667, -65.0, 10.0),
+        (6, 1, -16.667, 65.0, 10.0),
+        (7, 3, -6.667, 23.0, 10.0),
+        (8, 4, -6.667, 53.0, 10.0),
+        (9, 3, 6.667, 23.0, 10.0),
+        (10, 4, 6.667, 53.0, 10.0),
+        (11, 2, 16.667, -65.0, 10.0),
+        (12, 1, 16.667, 65.0, 10.0),
+        (13, 7, 25.0, 34.667, 10.0),
+        (14, 7, 25.0, 41.333, 10.0),
+        (15, 5, 50.0, -21.667, 10.0),
+        (16, 5, 50.0, 21.667, 10.0),
     ]
     # edge_data = find.get_edge_data()
     update_list = find.identify_close_edge(edge_data, measured_edges)
