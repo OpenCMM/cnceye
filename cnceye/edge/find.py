@@ -106,7 +106,7 @@ def find_lines(filepath: str, edge_count: int, minimal_diff: float = 5.0):
 def get_edge_data(mysql_config=MYSQL_CONFIG):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
-    query = "SELECT id,side_id,x,y,z FROM edge"
+    query = "SELECT id,x,y,z FROM edge"
     cursor.execute(query)
     edges = cursor.fetchall()
     cursor.close()
@@ -116,7 +116,7 @@ def get_edge_data(mysql_config=MYSQL_CONFIG):
 
 def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
     update_list = []
-    for id, side_id, x, y, z in edges:
+    for id, x, y, z in edges:
         min_distance = 999999.0
         data_with_min_distance = []
         for measured_edge in measured_edges:
