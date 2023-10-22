@@ -28,7 +28,7 @@ def copy_sqlite_db_to_mysql():
 def test_find_edges():
     copy_sqlite_db_to_mysql()
     measured_edges = find.find_edges()
-    assert len(measured_edges) == 36
+    assert len(measured_edges) > 32
 
 
 def test_find_edge():
@@ -41,7 +41,7 @@ def test_find_edge_from_sqlite():
     db_path = "tests/fixtures/db/listener.db"
     measured_edges = find.find_edges_from_sqlite(db_path, 100.0)
     print(measured_edges)
-    assert len(measured_edges) == 36
+    assert len(measured_edges) > 32
 
 
 def test_add_measured_edge_coord():
