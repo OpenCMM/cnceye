@@ -22,7 +22,7 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         previous_distance = distance
 
 
-def find_edges(minimal_diff: float = 5.0, mysql_config=MYSQL_CONFIG):
+def find_edges(mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "SELECT * FROM sensor"
@@ -106,7 +106,7 @@ def find_lines(filepath: str, edge_count: int, minimal_diff: float = 5.0):
 def get_edge_data(mysql_config=MYSQL_CONFIG):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
-    query = "SELECT id,side_id,x,y,z FROM edge"
+    query = "SELECT id,x,y,z FROM edge"
     cursor.execute(query)
     edges = cursor.fetchall()
     cursor.close()
@@ -116,7 +116,7 @@ def get_edge_data(mysql_config=MYSQL_CONFIG):
 
 def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
     update_list = []
-    for id, side_id, x, y, z in edges:
+    for id, x, y, z in edges:
         min_distance = 999999.0
         data_with_min_distance = []
         for measured_edge in measured_edges:
@@ -146,11 +146,13 @@ def add_measured_edge_coord(edge_list: list, mysql_config=MYSQL_CONFIG):
     cnx.close()
 
 
-def process_edges():
+def process_edges(mysql_config: dict, minimal_diff: float = 5.0) -> int:
     """
     Identify the edges from the sensor data and add the coordinates to the database
     """
-    measured_edges = find_edges()
-    edge_data = get_edge_data()
+    measured_edges = find_edges(mysql_config, minimal_diff)
+    edge_data = get_edge_data(mysql_config)
     update_list = identify_close_edge(edge_data, measured_edges)
-    add_measured_edge_coord(update_list)
+    add_measured_edge_coord(update_list, mysql_config)
+    edge_count = len(edge_data)
+    return edge_count
