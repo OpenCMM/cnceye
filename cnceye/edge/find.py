@@ -22,7 +22,9 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         previous_distance = distance
 
 
-def find_edges(process_id:int, mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0):
+def find_edges(
+    process_id: int, mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0
+):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "SELECT * FROM sensor WHERE process_id = %s"

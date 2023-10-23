@@ -5,6 +5,7 @@ import sqlite3
 
 process_id = 100
 
+
 def copy_sqlite_db_to_mysql():
     db_path = "tests/fixtures/db/listener.db"
     conn = sqlite3.connect(db_path)
@@ -20,7 +21,8 @@ def copy_sqlite_db_to_mysql():
     mysql_conn = mysql.connector.connect(**MYSQL_CONFIG, database="coord")
     mysql_cur = mysql_conn.cursor()
     mysql_cur.executemany(
-        "INSERT INTO sensor(x, y, z, distance, process_id) VALUES (%s,%s,%s, %s, %s)", data
+        "INSERT INTO sensor(x, y, z, distance, process_id) VALUES (%s,%s,%s, %s, %s)",
+        data,
     )
     mysql_conn.commit()
     mysql_cur.close()
