@@ -22,17 +22,19 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         previous_distance = distance
 
 
-def find_edges(mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0):
+def find_edges(
+    process_id: int, mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0
+):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
-    query = "SELECT * FROM sensor"
-    cursor.execute(query)
+    query = "SELECT * FROM sensor WHERE process_id = %s"
+    cursor.execute(query, (process_id,))
     rows = cursor.fetchall()
     previous_distance = ""
     edges = []
     for row in rows:
         # x, y, z, distance
-        distance = row[4]
+        distance = row[5]
         if check_if_edge_is_found(distance, previous_distance, minimal_diff):
             edges.append(row)
         previous_distance = distance
