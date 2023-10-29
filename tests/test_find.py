@@ -1,4 +1,4 @@
-from cnceye.config import MYSQL_CONFIG
+from tests.config import MYSQL_CONFIG
 from cnceye.edge import find
 import mysql.connector
 import sqlite3

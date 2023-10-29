@@ -3,9 +3,6 @@ import sqlite3
 import mysql.connector
 from mysql.connector.errors import IntegrityError
 
-from cnceye.config import MYSQL_CONFIG
-
-
 def find_edge(filepath: str, minimal_diff: float = 5.0):
     # read csv
     with open(filepath, newline="") as csvfile:
@@ -23,7 +20,7 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
 
 
 def find_edges(
-    process_id: int, mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0
+    process_id: int, mysql_config: dict, minimal_diff: float = 5.0
 ):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
@@ -105,7 +102,7 @@ def find_lines(filepath: str, edge_count: int, minimal_diff: float = 5.0):
     return lines
 
 
-def get_edge_data(model_id: int, mysql_config=MYSQL_CONFIG):
+def get_edge_data(model_id: int, mysql_config):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "SELECT id,x,y,z FROM edge WHERE model_id = %s"
@@ -135,7 +132,7 @@ def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
     return update_list
 
 
-def add_measured_edge_coord(edge_list: list, mysql_config=MYSQL_CONFIG):
+def add_measured_edge_coord(edge_list: list, mysql_config):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "UPDATE edge SET rx = %s, ry = %s, rz = %s WHERE id = %s"

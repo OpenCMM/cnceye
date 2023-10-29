@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cnceye"
-version = "0.4.2"
+version = "0.4.3"
 description = "CMM python library"
 license = "MIT"
 authors = ["yuichiroaoki <45054071+yuichiroaoki@users.noreply.github.com>"]
