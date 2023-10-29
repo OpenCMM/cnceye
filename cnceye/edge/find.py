@@ -3,6 +3,7 @@ import sqlite3
 import mysql.connector
 from mysql.connector.errors import IntegrityError
 
+
 def find_edge(filepath: str, minimal_diff: float = 5.0):
     # read csv
     with open(filepath, newline="") as csvfile:
@@ -19,9 +20,7 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         previous_distance = distance
 
 
-def find_edges(
-    process_id: int, mysql_config: dict, minimal_diff: float = 5.0
-):
+def find_edges(process_id: int, mysql_config: dict, minimal_diff: float = 5.0):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "SELECT * FROM sensor WHERE process_id = %s"
@@ -145,7 +144,9 @@ def add_measured_edge_coord(edge_list: list, mysql_config):
     cnx.close()
 
 
-def process_edges(model_id: int, process_id: int, mysql_config: dict, minimal_diff: float = 5.0) -> int:
+def process_edges(
+    model_id: int, process_id: int, mysql_config: dict, minimal_diff: float = 5.0
+) -> int:
     """
     Identify the edges from the sensor data and add the coordinates to the database
     """

@@ -6,6 +6,7 @@ from mathutils import Vector
 import sqlite3
 import csv
 import sys
+import random
 
 # Get the active object (the 3D model)
 obj = bpy.data.objects["test-part"]
@@ -14,6 +15,8 @@ ray_direction = Vector((0, 0, -1))
 
 # x, y, z, distance
 data = []
+current_data = 100000
+threshold = 100
 
 # Ensure the object has a mesh
 assert obj.type == "MESH"
@@ -21,7 +24,9 @@ assert obj.type == "MESH"
 
 def distance_to_analog_output(distance: float):
     distance = distance * 1000 * 135  # m to mm, distance to analog output
-    return float(round(distance))
+    # add noise
+    distance = distance + (distance * 0.001 * (2 * random.random() - 1))
+    return round(distance)
 
 
 def load_gcode(filepath: str):
@@ -40,6 +45,7 @@ def move_start_point(_start_point, xyz, feedrate: float):
     feedrate: float (mm/min)
     sensor response time is 10ms
     """
+    global current_data
     one_step_distance = feedrate / 1000 / 60 * 0.01  # m/step
     destination = Vector(tuple([x / 1000 for x in xyz]))
     total_distance_to_move = (destination - _start_point).length
@@ -57,7 +63,10 @@ def move_start_point(_start_point, xyz, feedrate: float):
         xyz = [_start_point.x, _start_point.y, _start_point.z]
         xyz = [round(x * 1000, 3) for x in xyz]
 
-        data.append([*xyz, distance_to_analog_output(distance)])
+        _sensor_data = distance_to_analog_output(distance)
+        if abs(_sensor_data - current_data) > threshold:
+            data.append([*xyz, _sensor_data])
+            current_data = _sensor_data
         _start_point = _start_point + move_vector
 
     return destination  # _start_point not may not become exactly the destination
