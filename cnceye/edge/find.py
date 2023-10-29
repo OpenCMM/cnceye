@@ -3,8 +3,6 @@ import sqlite3
 import mysql.connector
 from mysql.connector.errors import IntegrityError
 
-from cnceye.config import MYSQL_CONFIG
-
 
 def find_edge(filepath: str, minimal_diff: float = 5.0):
     # read csv
@@ -22,9 +20,7 @@ def find_edge(filepath: str, minimal_diff: float = 5.0):
         previous_distance = distance
 
 
-def find_edges(
-    process_id: int, mysql_config: dict = MYSQL_CONFIG, minimal_diff: float = 5.0
-):
+def find_edges(process_id: int, mysql_config: dict, minimal_diff: float = 5.0):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "SELECT * FROM sensor WHERE process_id = %s"
@@ -105,11 +101,11 @@ def find_lines(filepath: str, edge_count: int, minimal_diff: float = 5.0):
     return lines
 
 
-def get_edge_data(mysql_config=MYSQL_CONFIG):
+def get_edge_data(model_id: int, mysql_config):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
-    query = "SELECT id,x,y,z FROM edge"
-    cursor.execute(query)
+    query = "SELECT id,x,y,z FROM edge WHERE model_id = %s"
+    cursor.execute(query, (model_id,))
     edges = cursor.fetchall()
     cursor.close()
     cnx.close()
@@ -135,7 +131,7 @@ def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
     return update_list
 
 
-def add_measured_edge_coord(edge_list: list, mysql_config=MYSQL_CONFIG):
+def add_measured_edge_coord(edge_list: list, mysql_config: dict):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "UPDATE edge SET rx = %s, ry = %s, rz = %s WHERE id = %s"
@@ -148,12 +144,14 @@ def add_measured_edge_coord(edge_list: list, mysql_config=MYSQL_CONFIG):
     cnx.close()
 
 
-def process_edges(mysql_config: dict, minimal_diff: float = 5.0) -> int:
+def process_edges(
+    model_id: int, process_id: int, mysql_config: dict, minimal_diff: float = 5.0
+) -> int:
     """
     Identify the edges from the sensor data and add the coordinates to the database
     """
-    measured_edges = find_edges(mysql_config, minimal_diff)
-    edge_data = get_edge_data(mysql_config)
+    measured_edges = find_edges(process_id, mysql_config, minimal_diff)
+    edge_data = get_edge_data(model_id, mysql_config)
     update_list = identify_close_edge(edge_data, measured_edges)
     add_measured_edge_coord(update_list, mysql_config)
     edge_count = len(edge_data)

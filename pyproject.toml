@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cnceye"
-version = "0.4.2"
+version = "0.4.3"
 description = "CMM python library"
 license = "MIT"
 authors = ["yuichiroaoki <45054071+yuichiroaoki@users.noreply.github.com>"]
@@ -11,13 +11,13 @@ keywords = ["cnc", "cmm", "milling", "gcode"]
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 mysql-connector-python = "^8.1.0"
-scipy = "^1.11.1"
 
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.280"
 pytest = "^7.4.0"
 black = "^23.7.0"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]

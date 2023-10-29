@@ -1,4 +1,4 @@
-from cnceye.config import MYSQL_CONFIG
+from tests.config import MYSQL_CONFIG
 from cnceye.edge import find
 import mysql.connector
 import sqlite3
@@ -31,7 +31,7 @@ def copy_sqlite_db_to_mysql():
 
 def test_find_edges():
     copy_sqlite_db_to_mysql()
-    measured_edges = find.find_edges(process_id)
+    measured_edges = find.find_edges(process_id, MYSQL_CONFIG)
     assert len(measured_edges) > 32
 
 
@@ -49,7 +49,7 @@ def test_find_edge_from_sqlite():
 
 
 def test_add_measured_edge_coord():
-    measured_edges = find.find_edges(process_id)
+    measured_edges = find.find_edges(process_id, MYSQL_CONFIG)
     edge_data = [
         (1, -50.0, -21.667, 10.0),
         (2, -50.0, 21.667, 10.0),
@@ -83,9 +83,9 @@ def test_add_measured_edge_coord():
         (30, -4.5, -22.203, 10.0),
         (31, -4.5, -37.791, 10.0),
     ]
-    # edge_data = find.get_edge_data()
+    # edge_data = find.get_edge_data(1)
     update_list = find.identify_close_edge(edge_data, measured_edges)
-    find.add_measured_edge_coord(update_list)
+    find.add_measured_edge_coord(update_list, MYSQL_CONFIG)
 
 
 def test_check_if_edge_is_found():
