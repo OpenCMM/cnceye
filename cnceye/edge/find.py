@@ -131,7 +131,7 @@ def identify_close_edge(edges, measured_edges, distance_threshold=2.5):
     return update_list
 
 
-def add_measured_edge_coord(edge_list: list, mysql_config):
+def add_measured_edge_coord(edge_list: list, mysql_config: dict):
     cnx = mysql.connector.connect(**mysql_config, database="coord")
     cursor = cnx.cursor()
     query = "UPDATE edge SET rx = %s, ry = %s, rz = %s WHERE id = %s"

@@ -11,7 +11,6 @@ keywords = ["cnc", "cmm", "milling", "gcode"]
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 mysql-connector-python = "^8.1.0"
-scipy = "^1.11.1"
 
 
 [tool.poetry.group.dev.dependencies]

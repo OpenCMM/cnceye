@@ -85,7 +85,7 @@ def test_add_measured_edge_coord():
     ]
     # edge_data = find.get_edge_data(1)
     update_list = find.identify_close_edge(edge_data, measured_edges)
-    find.add_measured_edge_coord(update_list)
+    find.add_measured_edge_coord(update_list, MYSQL_CONFIG)
 
 
 def test_check_if_edge_is_found():
