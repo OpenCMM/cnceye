@@ -83,10 +83,24 @@ class Shape:
     def get_lines_and_arcs(self, decimal_places: int = 3, arc_threshold: int = 1):
         """
         Extract lines and arcs from an STL file \n
-        If the line length is less than 1, it is considered an arc. \n
-        if the line length for an arc is close to the previous arc length,
+        If the line length is less than 1, it is considered an arc.
+        If the line length for an arc is close to the previous arc length,
         it is considered part of the previous arc. \n
         Note: This is not a robust algorithm.
+
+        Parameters
+        ----------
+        decimal_places : int
+            Number of decimal places to round to
+        arc_threshold : int
+            Length threshold to determine if a line is an arc
+
+        Returns
+        -------
+        lines : list
+            List of lines
+        arcs : list
+            List of arcs
         """
         shapes = self.get_shapes()
         lines = []

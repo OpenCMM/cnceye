@@ -1,4 +1,4 @@
-from cnceye.shape import Shape
+from cnceye import Shape
 
 
 def test_are_facets_on_same_plane():

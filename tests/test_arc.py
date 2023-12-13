@@ -1,4 +1,4 @@
-from cnceye.shape import Shape
+from cnceye import Shape
 from cnceye.arc import (
     fit_circle,
     get_arc_info,
