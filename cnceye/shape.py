@@ -152,6 +152,7 @@ class Shape:
 
         return shapes
 
+
 def round_shape_values(shapes: np.ndarray, decimal_places: int = 3):
     for i in range(len(shapes)):
         shapes[i] = np.round(shapes[i], decimals=decimal_places)

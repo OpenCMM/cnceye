@@ -38,10 +38,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Run MySQL
-        run: |
-          docker-compose up -d mysql
-
       - name: Run image
         uses: abatilo/actions-poetry@v2
         with:
