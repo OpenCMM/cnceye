@@ -60,3 +60,11 @@ def test_get_lines_and_arcs_with_step_slope():
     assert len(lines[0]) == 4
     assert len(lines[1]) == 4
     assert len(lines[2]) == 4
+
+
+def test_get_arc_info():
+    shape = Shape("tests/fixtures/stl/sample.stl")
+    lines, arcs = shape.get_lines_and_arcs()
+    for arc_points in arcs[0]:
+        radius, center = shape.get_arc_info(arc_points)
+        assert radius == 9.0 or radius == 5.0
