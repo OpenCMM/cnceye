@@ -1,6 +1,7 @@
 import trimesh
 import numpy as np
 from trimesh.graph import face_adjacency
+from .arc import get_arc_info
 
 
 class Shape:
@@ -80,6 +81,27 @@ class Shape:
         return coplanar_facets
 
     def get_lines_and_arcs(self, decimal_places: int = 3, arc_threshold: int = 1):
+        """
+        Extract lines and arcs from an STL file \n
+        If the line length is less than 1, it is considered an arc.
+        If the line length for an arc is close to the previous arc length,
+        it is considered part of the previous arc. \n
+        Note: This is not a robust algorithm.
+
+        Parameters
+        ----------
+        decimal_places : int
+            Number of decimal places to round to
+        arc_threshold : int
+            Length threshold to determine if a line is an arc
+
+        Returns
+        -------
+        lines : list
+            List of lines
+        arcs : list
+            List of arcs
+        """
         shapes = self.get_shapes()
         lines = []
         arcs = []
@@ -118,13 +140,6 @@ class Shape:
         return lines, arcs
 
     def get_shapes(self):
-        """
-        Extract lines and arcs from an STL file \n
-        If the line length is less than 1, it is considered an arc. \n
-        if the line length for an arc is close to the previous arc length,
-        it is considered part of the previous arc. \n
-        Note: This is not a robust algorithm.
-        """
         visible_facet_indices = self.get_visible_facets()
         group_facets = self.group_by_coplanar_facets(visible_facet_indices)
         adjacency = face_adjacency(self.mesh.faces)
@@ -151,6 +166,26 @@ class Shape:
             shapes.append(shapes_on_coplanar_facet)
 
         return shapes
+
+    def get_arc_info(self, arc_points: np.ndarray, decimal_places: int = 3):
+        """
+        Get information about arc
+
+        Parameters
+        ----------
+        arc_points : list
+            List of arc coordinates [(x,y,z), (x,y,z)]
+        decimal_places : int
+            Number of decimal places to round to
+
+        Returns
+        -------
+        radius : float
+            Radius of arc
+        center : np.array
+            Center of arc
+        """
+        return get_arc_info(arc_points, decimal_places=decimal_places)
 
 
 def round_shape_values(shapes: np.ndarray, decimal_places: int = 3):
