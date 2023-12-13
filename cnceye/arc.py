@@ -41,12 +41,14 @@ def get_arc_info(arc_points: np.ndarray, decimal_places: int = 3):
         Radius of arc
     center : np.array
         Center of arc
+    is_circle : bool
+        True if arc is a circle
     """
     center_x, center_y, radius = fit_circle(arc_points[:, :2])
     center = np.array([center_x, center_y, arc_points[0, 2]])
     center = np.round(center, decimal_places)
     radius = round(radius, decimal_places)
-    return radius, center
+    return radius, center, is_circle(arc_points)
 
 
 def fit_circle(points):
@@ -68,3 +70,16 @@ def fit_circle(points):
 def circle_residuals(params, x, y):
     cx, cy, r = params
     return (x - cx) ** 2 + (y - cy) ** 2 - r**2
+
+
+def is_circle(points, tolerance=1.0):
+    """
+    Check if points are a circle within a tolerance
+
+    If they are a circle, distances between points should be within tolerance.
+    If not, they are an arc.
+    """
+    x = points[:, 0]
+    y = points[:, 1]
+    distances = np.sqrt((x - np.mean(x)) ** 2 + (y - np.mean(y)) ** 2)
+    return np.allclose(distances, distances[0], atol=tolerance)

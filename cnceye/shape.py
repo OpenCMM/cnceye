@@ -184,6 +184,8 @@ class Shape:
             Radius of arc
         center : np.array
             Center of arc
+        is_circle : bool
+            True if arc is a circle
         """
         return get_arc_info(arc_points, decimal_places=decimal_places)
 
