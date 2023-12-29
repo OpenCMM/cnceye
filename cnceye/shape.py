@@ -91,6 +91,15 @@ class Shape:
                 if np.array_equal(prev_point, point):
                     return point
 
+    def line_length_similar(self, points0, points1):
+        line_length0 = np.linalg.norm(points0[0] - points0[1])
+        line_length1 = np.linalg.norm(points1[0] - points1[1])
+        return np.isclose(
+            line_length0,
+            line_length1,
+            atol=1e-3,
+        )
+
     def combine_same_arc(self, arc_group):
         """
         Combine arcs that are the same
@@ -101,30 +110,32 @@ class Shape:
         prev_points = arc_group[0]
         for i in range(1, len(arc_group)):
             arc_points = arc_group[i]
-            if np.array_equal(prev_points[-1], arc_points[0]) and np.isclose(
-                np.linalg.norm(prev_points[-2] - prev_points[-1]),
-                np.linalg.norm(arc_points[0] - arc_points[1]),
-                atol=1e-3,
-            ):
+            if np.array_equal(
+                prev_points[-1], arc_points[0]
+            ) and self.line_length_similar(prev_points, arc_points):
                 # merge prev_points and arc_points
                 prev_points = np.vstack((prev_points, arc_points[1:]))
-            elif np.array_equal(prev_points[-1], arc_points[-1]) and np.isclose(
-                np.linalg.norm(prev_points[-2] - prev_points[-1]),
-                np.linalg.norm(arc_points[-2] - arc_points[-1]),
-                atol=1e-3,
-            ):
+            elif np.array_equal(
+                prev_points[-1], arc_points[-1]
+            ) and self.line_length_similar(prev_points, arc_points):
                 # reverse arc_points and merge with prev_points
                 prev_points = np.vstack((prev_points, arc_points[-2::-1]))
-            elif np.array_equal(prev_points[0], arc_points[0]) and np.isclose(
-                np.linalg.norm(prev_points[1] - prev_points[0]),
-                np.linalg.norm(arc_points[1] - arc_points[0]),
-                atol=1e-3,
-            ):
+            elif np.array_equal(
+                prev_points[0], arc_points[0]
+            ) and self.line_length_similar(prev_points, arc_points):
                 # reverse prev_points and merge with arc_points
                 prev_points = np.vstack((arc_points[-2::-1], prev_points))
+            elif np.array_equal(
+                prev_points[0], arc_points[-1]
+            ) and self.line_length_similar(prev_points, arc_points):
+                # merge prev_points and reverse arc_points
+                prev_points = np.vstack((arc_points, prev_points[1:]))
             else:
                 new_arc_group.append(prev_points)
                 prev_points = arc_points
+
+            if i == len(arc_group) - 1:
+                new_arc_group.append(prev_points)
         return new_arc_group
 
     def get_lines_and_arcs(self, arc_threshold: int = 1):

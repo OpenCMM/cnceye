@@ -49,6 +49,11 @@ def test_lines_and_arcs():
 
     assert len(lines[0]) == 8
     assert len(arcs[0]) == 5
+    for arc_points in arcs[0]:
+        radius, center, is_circle = shape.get_arc_info(arc_points)
+        # assert is_circle is True
+        print(radius, center, is_circle)
+        assert radius == 5 or radius == 9
 
 
 def test_get_lines_and_arcs_with_step_slope():
@@ -123,8 +128,49 @@ def test_cadquery_models_more_holes():
     assert len(arcs) == 2
     assert len(lines[0]) == 4
     assert len(arcs[0]) == 5
+    assert len(arcs[1]) == 8
 
     for arc_points in arcs[0]:
         radius, center, is_circle = shape.get_arc_info(arc_points)
         # assert is_circle is True
+        print(radius, center, is_circle)
         assert radius == small_hole_diameter / 2 or radius == diameter / 2
+
+
+def test_cadquery_models_filleting():
+    height = 60.0
+    width = 80.0
+    thickness = 10.0
+    diameter = 22.0
+    padding = 12.0
+    small_hole_diameter = 4.4
+
+    result = (
+        cq.Workplane("XY")
+        .box(height, width, thickness)
+        .faces(">Z")
+        .workplane()
+        .hole(diameter)
+        .faces(">Z")
+        .workplane()
+        .rect(height - padding, width - padding, forConstruction=True)
+        .vertices()
+        .cboreHole(2.4, small_hole_diameter, 2.1)
+        .edges("|Z")
+        .fillet(2.0)
+    )
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 2
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 9
+    assert len(arcs[1]) == 8
+
+    for arc_points in arcs[0]:
+        radius, center, is_circle = shape.get_arc_info(arc_points)
+        # assert is_circle is True
+        print(radius, center, is_circle)
+        # assert radius == small_hole_diameter / 2 or radius == diameter / 2
