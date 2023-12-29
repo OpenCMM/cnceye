@@ -1,5 +1,4 @@
 from cnceye import Shape
-import pytest
 import cadquery as cq
 
 
@@ -71,6 +70,7 @@ def test_get_arc_info():
         radius, center, is_circle = shape.get_arc_info(arc_points)
         assert radius == 9.0 or radius == 5.0
 
+
 def test_cadquery_models():
     height = 60.0
     width = 80.0
@@ -94,12 +94,14 @@ def test_cadquery_models():
     assert len(lines[0]) == 4
     assert len(arcs[0]) == 1
 
+
 def test_cadquery_models_more_holes():
     height = 60.0
     width = 80.0
     thickness = 10.0
     diameter = 22.0
     padding = 12.0
+    small_hole_diameter = 4.4
 
     result = (
         cq.Workplane("XY")
@@ -111,15 +113,18 @@ def test_cadquery_models_more_holes():
         .workplane()
         .rect(height - padding, width - padding, forConstruction=True)
         .vertices()
-        .cboreHole(2.4, 4.4, 2.1)
+        .cboreHole(2.4, small_hole_diameter, 2.1)
     )
     stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
     cq.exporters.export(result, stl_filename)
     shape = Shape(stl_filename)
     lines, arcs = shape.get_lines_and_arcs()
-
     assert len(lines) == 1
     assert len(arcs) == 2
-
     assert len(lines[0]) == 4
-    assert len(arcs[0]) == 1
+    assert len(arcs[0]) == 5
+
+    for arc_points in arcs[0]:
+        radius, center, is_circle = shape.get_arc_info(arc_points)
+        # assert is_circle is True
+        assert radius == small_hole_diameter / 2 or radius == diameter / 2

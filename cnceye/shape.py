@@ -91,6 +91,42 @@ class Shape:
                 if np.array_equal(prev_point, point):
                     return point
 
+    def combine_same_arc(self, arc_group):
+        """
+        Combine arcs that are the same
+        """
+        if len(arc_group) < 2:
+            return arc_group
+        new_arc_group = []
+        prev_points = arc_group[0]
+        for i in range(1, len(arc_group)):
+            arc_points = arc_group[i]
+            if np.array_equal(prev_points[-1], arc_points[0]) and np.isclose(
+                np.linalg.norm(prev_points[-2] - prev_points[-1]),
+                np.linalg.norm(arc_points[0] - arc_points[1]),
+                atol=1e-3,
+            ):
+                # merge prev_points and arc_points
+                prev_points = np.vstack((prev_points, arc_points[1:]))
+            elif np.array_equal(prev_points[-1], arc_points[-1]) and np.isclose(
+                np.linalg.norm(prev_points[-2] - prev_points[-1]),
+                np.linalg.norm(arc_points[-2] - arc_points[-1]),
+                atol=1e-3,
+            ):
+                # reverse arc_points and merge with prev_points
+                prev_points = np.vstack((prev_points, arc_points[-2::-1]))
+            elif np.array_equal(prev_points[0], arc_points[0]) and np.isclose(
+                np.linalg.norm(prev_points[1] - prev_points[0]),
+                np.linalg.norm(arc_points[1] - arc_points[0]),
+                atol=1e-3,
+            ):
+                # reverse prev_points and merge with arc_points
+                prev_points = np.vstack((arc_points[-2::-1], prev_points))
+            else:
+                new_arc_group.append(prev_points)
+                prev_points = arc_points
+        return new_arc_group
+
     def get_lines_and_arcs(self, arc_threshold: int = 1):
         """
         Extract lines and arcs from an STL file \n
@@ -138,7 +174,10 @@ class Shape:
                     ):
                         mask = np.any(point != common_point, axis=1)
                         new_point = point[mask]
-                        arc_group[-1] = np.vstack((arc_group[-1], new_point))
+                        if np.array_equal(arc_group[-1][-1], common_point):
+                            arc_group[-1] = np.vstack((arc_group[-1], new_point))
+                        else:
+                            arc_group[-1] = np.vstack((new_point, arc_group[-1]))
                     else:
                         # new arc
                         arc_group.append(point)
@@ -148,7 +187,7 @@ class Shape:
             if line_group:
                 lines.append(line_group)
             if arc_group:
-                arcs.append(arc_group)
+                arcs.append(self.combine_same_arc(arc_group))
 
         return lines, arcs
 
