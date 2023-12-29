@@ -80,6 +80,17 @@ class Shape:
 
         return coplanar_facets
 
+    def get_common_point(self, prev_points, points):
+        """
+        Get the common point between two lists of points
+        """
+        if prev_points is None:
+            return None
+        for prev_point in prev_points:
+            for point in points:
+                if np.array_equal(prev_point, point):
+                    return point
+
     def get_lines_and_arcs(self, arc_threshold: int = 1):
         """
         Extract lines and arcs from an STL file \n
@@ -105,6 +116,7 @@ class Shape:
         arcs = []
 
         previous_length = 0
+        previous_arc_points = None
         for coplanar_shapes in shapes:
             line_group = []
             arc_group = []
@@ -118,12 +130,19 @@ class Shape:
                     line_group.append(point)
                 else:
                     # arc
-                    # if close to previous length, add to previous arc
-                    if np.isclose(line_length, previous_length, atol=1e-3):
-                        arc_group[-1] = np.vstack((arc_group[-1], point1))
+                    # if there is a common point and the length is
+                    # close to previous length, add to previous arc
+                    common_point = self.get_common_point(previous_arc_points, point)
+                    if common_point is not None and np.isclose(
+                        line_length, previous_length, atol=1e-3
+                    ):
+                        mask = np.any(point != common_point, axis=1)
+                        new_point = point[mask]
+                        arc_group[-1] = np.vstack((arc_group[-1], new_point))
                     else:
+                        # new arc
                         arc_group.append(point)
-
+                    previous_arc_points = point
                 previous_length = line_length
 
             if line_group:

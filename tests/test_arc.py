@@ -20,7 +20,7 @@ def test_get_arc_info():
     shape = Shape("tests/fixtures/stl/sample.stl")
     lines, arcs = shape.get_lines_and_arcs()
     for arc_points in arcs[0]:
-        radius, center = get_arc_info(arc_points)
+        radius, center, is_circle = get_arc_info(arc_points)
         assert radius == 9.0 or radius == 5.0
 
 
