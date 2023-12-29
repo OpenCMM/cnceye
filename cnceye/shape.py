@@ -80,7 +80,65 @@ class Shape:
 
         return coplanar_facets
 
-    def get_lines_and_arcs(self, decimal_places: int = 3, arc_threshold: int = 1):
+    def get_common_point(self, prev_points, points):
+        """
+        Get the common point between two lists of points
+        """
+        if prev_points is None:
+            return None
+        for prev_point in prev_points:
+            for point in points:
+                if np.array_equal(prev_point, point):
+                    return point
+
+    def line_length_similar(self, points0, points1):
+        line_length0 = np.linalg.norm(points0[0] - points0[1])
+        line_length1 = np.linalg.norm(points1[0] - points1[1])
+        return np.isclose(
+            line_length0,
+            line_length1,
+            atol=1e-3,
+        )
+
+    def combine_same_arc(self, arc_group):
+        """
+        Combine arcs that are the same
+        """
+        if len(arc_group) < 2:
+            return arc_group
+        new_arc_group = []
+        prev_points = arc_group[0]
+        for i in range(1, len(arc_group)):
+            arc_points = arc_group[i]
+            if np.array_equal(
+                prev_points[-1], arc_points[0]
+            ) and self.line_length_similar(prev_points, arc_points):
+                # merge prev_points and arc_points
+                prev_points = np.vstack((prev_points, arc_points[1:]))
+            elif np.array_equal(
+                prev_points[-1], arc_points[-1]
+            ) and self.line_length_similar(prev_points, arc_points):
+                # reverse arc_points and merge with prev_points
+                prev_points = np.vstack((prev_points, arc_points[-2::-1]))
+            elif np.array_equal(
+                prev_points[0], arc_points[0]
+            ) and self.line_length_similar(prev_points, arc_points):
+                # reverse prev_points and merge with arc_points
+                prev_points = np.vstack((arc_points[-2::-1], prev_points))
+            elif np.array_equal(
+                prev_points[0], arc_points[-1]
+            ) and self.line_length_similar(prev_points, arc_points):
+                # merge prev_points and reverse arc_points
+                prev_points = np.vstack((arc_points, prev_points[1:]))
+            else:
+                new_arc_group.append(prev_points)
+                prev_points = arc_points
+
+            if i == len(arc_group) - 1:
+                new_arc_group.append(prev_points)
+        return new_arc_group
+
+    def get_lines_and_arcs(self, arc_threshold: int = 1):
         """
         Extract lines and arcs from an STL file \n
         If the line length is less than 1, it is considered an arc.
@@ -90,8 +148,6 @@ class Shape:
 
         Parameters
         ----------
-        decimal_places : int
-            Number of decimal places to round to
         arc_threshold : int
             Length threshold to determine if a line is an arc
 
@@ -107,6 +163,7 @@ class Shape:
         arcs = []
 
         previous_length = 0
+        previous_arc_points = None
         for coplanar_shapes in shapes:
             line_group = []
             arc_group = []
@@ -120,22 +177,28 @@ class Shape:
                     line_group.append(point)
                 else:
                     # arc
-                    # if close to previous length, add to previous arc
-                    if np.isclose(line_length, previous_length, atol=1e-3):
-                        arc_group[-1] = np.vstack((arc_group[-1], point1))
+                    # if there is a common point and the length is
+                    # close to previous length, add to previous arc
+                    common_point = self.get_common_point(previous_arc_points, point)
+                    if common_point is not None and np.isclose(
+                        line_length, previous_length, atol=1e-3
+                    ):
+                        mask = np.any(point != common_point, axis=1)
+                        new_point = point[mask]
+                        if np.array_equal(arc_group[-1][-1], common_point):
+                            arc_group[-1] = np.vstack((arc_group[-1], new_point))
+                        else:
+                            arc_group[-1] = np.vstack((new_point, arc_group[-1]))
                     else:
+                        # new arc
                         arc_group.append(point)
-
+                    previous_arc_points = point
                 previous_length = line_length
-
-            # round to decimal places
-            line_group = round_shape_values(line_group, decimal_places)
-            arc_group = round_shape_values(arc_group, decimal_places)
 
             if line_group:
                 lines.append(line_group)
             if arc_group:
-                arcs.append(arc_group)
+                arcs.append(self.combine_same_arc(arc_group))
 
         return lines, arcs
 
@@ -184,8 +247,15 @@ class Shape:
             Radius of arc
         center : np.array
             Center of arc
+        is_circle : bool
+            True if arc is a circle
         """
         return get_arc_info(arc_points, decimal_places=decimal_places)
+
+    def analyze(self):
+        lines, arcs = self.get_lines_and_arcs()
+        self.lines = lines
+        self.arcs = arcs
 
 
 def round_shape_values(shapes: np.ndarray, decimal_places: int = 3):
