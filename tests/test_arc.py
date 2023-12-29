@@ -47,8 +47,8 @@ def test_is_circle():
     shape = Shape("tests/fixtures/stl/sample.stl")
     lines, arcs = shape.get_lines_and_arcs()
     arcs = arcs[0]
-    # assert not is_circle(arcs[0])
-    # assert not is_circle(arcs[1])
-    # assert not is_circle(arcs[2])
-    # assert not is_circle(arcs[3])
+    assert not is_circle(arcs[0])
+    assert not is_circle(arcs[1])
+    assert not is_circle(arcs[2])
+    assert not is_circle(arcs[3])
     assert is_circle(arcs[4])

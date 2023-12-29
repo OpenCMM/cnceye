@@ -68,3 +68,19 @@ def test_get_arc_info():
     for arc_points in arcs[0]:
         radius, center = shape.get_arc_info(arc_points)
         assert radius == 9.0 or radius == 5.0
+
+
+def test_part_design_example_from_freecad():
+    shape = Shape("tests/fixtures/stl/PartDesignExample-Body.stl")
+    lines, arcs = shape.get_lines_and_arcs()
+
+    assert len(lines) > 3
+    assert len(arcs) == 1
+
+
+def test_schenkel_from_freecad():
+    shape = Shape("tests/fixtures/stl/Schenkel.stl")
+    lines, arcs = shape.get_lines_and_arcs()
+
+    assert len(lines) > 20
+    assert len(arcs) > 5

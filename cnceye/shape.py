@@ -80,7 +80,7 @@ class Shape:
 
         return coplanar_facets
 
-    def get_lines_and_arcs(self, decimal_places: int = 3, arc_threshold: int = 1):
+    def get_lines_and_arcs(self, arc_threshold: int = 1):
         """
         Extract lines and arcs from an STL file \n
         If the line length is less than 1, it is considered an arc.
@@ -90,8 +90,6 @@ class Shape:
 
         Parameters
         ----------
-        decimal_places : int
-            Number of decimal places to round to
         arc_threshold : int
             Length threshold to determine if a line is an arc
 
@@ -127,10 +125,6 @@ class Shape:
                         arc_group.append(point)
 
                 previous_length = line_length
-
-            # round to decimal places
-            line_group = round_shape_values(line_group, decimal_places)
-            arc_group = round_shape_values(arc_group, decimal_places)
 
             if line_group:
                 lines.append(line_group)
@@ -188,6 +182,11 @@ class Shape:
             True if arc is a circle
         """
         return get_arc_info(arc_points, decimal_places=decimal_places)
+
+    def analyze(self):
+        lines, arcs = self.get_lines_and_arcs()
+        self.lines = lines
+        self.arcs = arcs
 
 
 def round_shape_values(shapes: np.ndarray, decimal_places: int = 3):
