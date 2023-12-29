@@ -12,14 +12,13 @@ keywords = ["cnc", "cmm", "milling", "gcode"]
 python = ">=3.11,<3.13"
 trimesh = "^4.0.5"
 numpy = "^1.26.2"
-rtree = "^1.1.0"
 scipy = "^1.11.4"
 
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.280"
-pytest = "^7.4.0"
-black = "^23.7.0"
+ruff = "^0.1.9"
+pytest = "^7.4.3"
+black = "^23.12.1"
 pytest-cov = "^4.1.0"
 
 [build-system]
