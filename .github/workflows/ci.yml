@@ -69,7 +69,7 @@ jobs:
           poetry run ruff --output-format=github --target-version=py37 .
 
       - name: Run the automated tests
-        run: poetry run pytest -v --cov=cnceye tests
+        run: poetry run pytest -v --cov=cnceye --cov-report=term-missing tests
 
   blender:
     name: Blender

@@ -1,5 +1,6 @@
 from cnceye import Shape
 import pytest
+import cadquery as cq
 
 
 def test_are_facets_on_same_plane():
@@ -70,20 +71,55 @@ def test_get_arc_info():
         radius, center, is_circle = shape.get_arc_info(arc_points)
         assert radius == 9.0 or radius == 5.0
 
-
-@pytest.mark.skip(reason="Not yet implemented")
-def test_part_design_example_from_freecad():
-    shape = Shape("tests/fixtures/stl/PartDesignExample-Body.stl")
+def test_cadquery_models():
+    height = 60.0
+    width = 80.0
+    thickness = 10.0
+    diameter = 22.0
+    result = (
+        cq.Workplane("XY")
+        .box(height, width, thickness)
+        .faces(">Z")
+        .workplane()
+        .hole(diameter)
+    )
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
     lines, arcs = shape.get_lines_and_arcs()
 
-    assert len(lines) > 3
+    assert len(lines) == 1
     assert len(arcs) == 1
 
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 1
 
-@pytest.mark.skip(reason="Not yet implemented")
-def test_schenkel_from_freecad():
-    shape = Shape("tests/fixtures/stl/Schenkel.stl")
+def test_cadquery_models_more_holes():
+    height = 60.0
+    width = 80.0
+    thickness = 10.0
+    diameter = 22.0
+    padding = 12.0
+
+    result = (
+        cq.Workplane("XY")
+        .box(height, width, thickness)
+        .faces(">Z")
+        .workplane()
+        .hole(diameter)
+        .faces(">Z")
+        .workplane()
+        .rect(height - padding, width - padding, forConstruction=True)
+        .vertices()
+        .cboreHole(2.4, 4.4, 2.1)
+    )
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
     lines, arcs = shape.get_lines_and_arcs()
 
-    assert len(lines) > 20
-    assert len(arcs) > 5
+    assert len(lines) == 1
+    assert len(arcs) == 2
+
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 1
