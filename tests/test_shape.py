@@ -137,6 +137,38 @@ def test_cadquery_models_more_holes():
         assert radius == small_hole_diameter / 2 or radius == diameter / 2
 
 
+def test_group_by_common_point_cadquery_models_filleting():
+    height = 60.0
+    width = 80.0
+    thickness = 10.0
+    diameter = 22.0
+    padding = 12.0
+    small_hole_diameter = 4.4
+
+    result = (
+        cq.Workplane("XY")
+        .box(height, width, thickness)
+        .faces(">Z")
+        .workplane()
+        .hole(diameter)
+        .faces(">Z")
+        .workplane()
+        .rect(height - padding, width - padding, forConstruction=True)
+        .vertices()
+        .cboreHole(2.4, small_hole_diameter, 2.1)
+        .edges("|Z")
+        .fillet(2.0)
+    )
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    shapes = shape.get_shapes()
+    point_groups = shape.group_by_common_point(shapes[0])
+    assert len(point_groups) == 6
+    point_groups = shape.group_by_common_point(shapes[1])
+    assert len(point_groups) == 8
+
+
 def test_cadquery_models_filleting():
     height = 60.0
     width = 80.0
@@ -199,3 +231,72 @@ def test_group_by_common_point_with_line_and_arc():
     shapes = shape.get_shapes()
     point_groups = shape.group_by_common_point(shapes[0])
     assert len(point_groups) == 3
+
+
+def test_cadquery_model_rectangle_inside_circle():
+    height = 20.0
+    width = 30.0
+    thickness = 10.0
+    radius = 82.0
+
+    result = cq.Workplane("front").circle(radius).rect(height, width).extrude(thickness)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 1
+
+    for arc_points in arcs[0]:
+        _radius, center, is_circle = shape.get_arc_info(arc_points)
+        # assert is_circle is True
+        assert radius == _radius
+
+
+def test_with_a_large_model():
+    height = 200.0
+    width = 300.0
+    thickness = 100.0
+    radius = 802.0
+
+    result = cq.Workplane("front").circle(radius).rect(height, width).extrude(thickness)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 1
+
+    for arc_points in arcs[0]:
+        _radius, center, is_circle = shape.get_arc_info(arc_points)
+        # assert is_circle is True
+        assert radius == _radius
+
+
+def test_with_a_small_model():
+    height = 0.02
+    width = 0.03
+    thickness = 0.1
+    radius = 0.8
+
+    result = cq.Workplane("front").circle(radius).rect(height, width).extrude(thickness)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 1
+
+    for arc_points in arcs[0]:
+        _radius, center, is_circle = shape.get_arc_info(arc_points)
+        # assert is_circle is True
+        assert radius == _radius
