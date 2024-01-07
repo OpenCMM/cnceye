@@ -174,3 +174,28 @@ def test_cadquery_models_filleting():
         # assert is_circle is True
         print(radius, center, is_circle)
         # assert radius == small_hole_diameter / 2 or radius == diameter / 2
+
+
+def test_group_by_common_point():
+    height = 20.0
+    width = 30.0
+    thickness = 10.0
+    radius = 82.0
+
+    result = cq.Workplane("front").circle(radius).rect(height, width).extrude(thickness)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    shapes = shape.get_shapes()
+    point_groups = shape.group_by_common_point(shapes[0])
+    assert len(point_groups) == 2
+    assert len(point_groups[0]) == 127
+    assert len(point_groups[1]) == 5
+
+
+def test_group_by_common_point_with_line_and_arc():
+    shape = Shape("tests/fixtures/stl/sample.stl")
+    shapes = shape.get_shapes()
+    point_groups = shape.group_by_common_point(shapes[0])
+    assert len(point_groups) == 3

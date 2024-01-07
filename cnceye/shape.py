@@ -138,6 +138,33 @@ class Shape:
                 new_arc_group.append(prev_points)
         return new_arc_group
 
+    def group_by_common_point(self, coplanar_shapes):
+        """
+        Group coplanar shapes by common point
+        """
+
+        def _get_point(_coplanar_shape):
+            point0 = self.mesh.vertices[_coplanar_shape[0]]
+            point1 = self.mesh.vertices[_coplanar_shape[1]]
+            return np.array([point0, point1])
+
+        previous_points = _get_point(coplanar_shapes[0])
+        point_groups = [previous_points]
+        for i in range(1, len(coplanar_shapes)):
+            point = _get_point(coplanar_shapes[i])
+            common_point = self.get_common_point(previous_points, point)
+            if common_point is not None:
+                mask = np.any(point != common_point, axis=1)
+                new_point = point[mask]
+                if np.array_equal(point_groups[-1][-1], common_point):
+                    point_groups[-1] = np.vstack((point_groups[-1], new_point))
+                else:
+                    point_groups[-1] = np.vstack((new_point, point_groups[-1]))
+            else:
+                point_groups.append(point)
+            previous_points = point
+        return point_groups
+
     def get_lines_and_arcs(self, arc_threshold: int = 1):
         """
         Extract lines and arcs from an STL file \n
