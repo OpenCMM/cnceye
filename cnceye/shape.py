@@ -149,6 +149,7 @@ class Shape:
             if np.array_equal(point_group[0], point_group[-1]):
                 groups.append(point_group)
             else:
+                found_pair = False
                 for missing_point_group in missing_point_groups:
                     if np.array_equal(missing_point_group[0], point_group[-1]):
                         combined_group = np.vstack(
@@ -168,8 +169,17 @@ class Shape:
                         )
                     else:
                         continue
-                    groups.append(combined_group)
-                missing_point_groups.append(point_group)
+                    if np.array_equal(combined_group[0], combined_group[-1]):
+                        groups.append(combined_group)
+                        missing_point_groups.remove(missing_point_group)
+                    else:
+                        # replace missing_point_group with combined_group
+                        missing_point_groups.remove(missing_point_group)
+                        missing_point_groups.append(combined_group)
+                    found_pair = True
+                    break
+                if not found_pair:
+                    missing_point_groups.append(point_group)
 
         # first and last point should be the same
         for group in groups:
@@ -236,7 +246,7 @@ class Shape:
     def get_lines_and_arcs(self, angle_threshold: float = 0.1):
         """
         Extract lines and arcs from an STL file \n
-        If the line angle between two lines is close to 0 and 
+        If the line angle between two lines is close to 0 and
         the line length is close to the previous line length,
         it is considered an arc. \n
         Note: This is not a robust algorithm.

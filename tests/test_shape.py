@@ -467,18 +467,69 @@ def test_mirror_from_faces():
     assert len(lines[0]) == 5
 
 
-# def test_cut_a_corner_out():
-#     result = cq.Workplane("front").box(10, 6, 2.0)  # make a basic prism
-#     result = (
-#         result.faces(">Z").vertices("<XY").workplane(centerOption="CenterOfMass")
-#     )  # select the lower left vertex and make a workplane
-#     result = result.circle(1.0).cutThruAll()  # cut the corner out
+def test_cut_a_corner_out():
+    result = cq.Workplane("front").box(10, 6, 2.0)  # make a basic prism
+    result = (
+        result.faces(">Z").vertices("<XY").workplane(centerOption="CenterOfMass")
+    )  # select the lower left vertex and make a workplane
+    result = result.circle(1.0).cutThruAll()  # cut the corner out
 
-#     stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
-#     cq.exporters.export(result, stl_filename)
-#     shape = Shape(stl_filename)
-#     lines, arcs = shape.get_lines_and_arcs()
-#     assert len(lines) == 1
-#     assert len(arcs) == 1
-#     assert len(lines[0]) == 4
-#     assert len(arcs[0]) == 1
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 1
+
+
+def test_construction_geometry():
+    result = (
+        cq.Workplane("front")
+        .box(2, 2, 0.5)
+        .faces(">Z")
+        .workplane()
+        .rect(1.5, 1.5, forConstruction=True)
+        .vertices()
+        .hole(0.125)
+    )
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs(0.3)
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 4
+
+
+def test_shelling():
+    result = cq.Workplane("front").box(2, 2, 2).faces("+Z or -X or +X").shell(0.1)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 2
+    assert len(arcs) == 0
+    assert len(lines[0]) == 4
+    assert len(lines[1]) == 8
+
+
+@pytest.mark.skip(reason="Not implemented yet")
+def test_making_lofts():
+    result = (
+        cq.Workplane("front")
+        .box(4.0, 4.0, 0.25)
+        .faces(">Z")
+        .circle(1.5)
+        .workplane(offset=3.0)
+        .rect(0.75, 0.5)
+        .loft(combine=True)
+    )
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
