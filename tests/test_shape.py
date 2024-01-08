@@ -465,3 +465,20 @@ def test_mirror_from_faces():
     assert len(lines) == 1
     assert len(arcs) == 0
     assert len(lines[0]) == 5
+
+
+# def test_cut_a_corner_out():
+#     result = cq.Workplane("front").box(10, 6, 2.0)  # make a basic prism
+#     result = (
+#         result.faces(">Z").vertices("<XY").workplane(centerOption="CenterOfMass")
+#     )  # select the lower left vertex and make a workplane
+#     result = result.circle(1.0).cutThruAll()  # cut the corner out
+
+#     stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+#     cq.exporters.export(result, stl_filename)
+#     shape = Shape(stl_filename)
+#     lines, arcs = shape.get_lines_and_arcs()
+#     assert len(lines) == 1
+#     assert len(arcs) == 1
+#     assert len(lines[0]) == 4
+#     assert len(arcs[0]) == 1

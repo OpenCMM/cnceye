@@ -138,37 +138,7 @@ class Shape:
                 new_arc_group.append(prev_points)
         return new_arc_group
 
-    def group_by_common_point(self, coplanar_shapes):
-        """
-        Group coplanar shapes by common point
-        """
-
-        def _get_point(_coplanar_shape):
-            point0 = self.mesh.vertices[_coplanar_shape[0]]
-            point1 = self.mesh.vertices[_coplanar_shape[1]]
-            return np.array([point0, point1])
-
-        point_groups = [_get_point(coplanar_shapes[0])]
-        for i in range(1, len(coplanar_shapes)):
-            point = _get_point(coplanar_shapes[i])
-
-            duplicate = False
-            for i in range(len(point_groups)):
-                point_group = point_groups[i]
-                first_and_last_point = np.array([point_group[0], point_group[-1]])
-                common_point = self.get_common_point(first_and_last_point, point)
-                if common_point is not None:
-                    mask = np.any(point != common_point, axis=1)
-                    new_point = point[mask]
-                    if np.array_equal(point_groups[i][-1], common_point):
-                        point_groups[i] = np.vstack((point_groups[i], new_point))
-                    else:
-                        point_groups[i] = np.vstack((new_point, point_groups[i]))
-                    duplicate = True
-                    break
-            if not duplicate:
-                point_groups.append(point)
-
+    def connect_same_group(self, point_groups):
         groups = []
         missing_point_groups = []
         for point_group in point_groups:
@@ -206,6 +176,39 @@ class Shape:
         for group in groups:
             assert np.array_equal(group[0], group[-1])
         return groups
+
+    def group_by_common_point(self, coplanar_shapes):
+        """
+        Group coplanar shapes by common point
+        """
+
+        def _get_point(_coplanar_shape):
+            point0 = self.mesh.vertices[_coplanar_shape[0]]
+            point1 = self.mesh.vertices[_coplanar_shape[1]]
+            return np.array([point0, point1])
+
+        point_groups = [_get_point(coplanar_shapes[0])]
+        for i in range(1, len(coplanar_shapes)):
+            point = _get_point(coplanar_shapes[i])
+
+            duplicate = False
+            for i in range(len(point_groups)):
+                point_group = point_groups[i]
+                first_and_last_point = np.array([point_group[0], point_group[-1]])
+                common_point = self.get_common_point(first_and_last_point, point)
+                if common_point is not None:
+                    mask = np.any(point != common_point, axis=1)
+                    new_point = point[mask]
+                    if np.array_equal(point_groups[i][-1], common_point):
+                        point_groups[i] = np.vstack((point_groups[i], new_point))
+                    else:
+                        point_groups[i] = np.vstack((new_point, point_groups[i]))
+                    duplicate = True
+                    break
+            if not duplicate:
+                point_groups.append(point)
+
+        return self.connect_same_group(point_groups)
 
     def get_line_angle(self, line0: np.array, line1: np.array):
         """
