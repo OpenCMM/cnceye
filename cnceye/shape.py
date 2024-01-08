@@ -139,6 +139,10 @@ class Shape:
         return new_arc_group
 
     def connect_same_group(self, point_groups):
+        """
+        Connect point groups that are the same \n
+        Check if the first and last point are the same \n
+        """
         groups = []
         missing_point_groups = []
         for point_group in point_groups:
@@ -150,26 +154,21 @@ class Shape:
                         combined_group = np.vstack(
                             (point_group, missing_point_group[1:])
                         )
-                        groups.append(combined_group)
-                        continue
                     elif np.array_equal(missing_point_group[-1], point_group[0]):
                         combined_group = np.vstack(
                             (missing_point_group, point_group[1:])
                         )
-                        groups.append(combined_group)
-                        continue
                     elif np.array_equal(missing_point_group[0], point_group[0]):
                         combined_group = np.vstack(
                             (point_group[::-1], missing_point_group[1:])
                         )
-                        groups.append(combined_group)
-                        continue
                     elif np.array_equal(missing_point_group[-1], point_group[-1]):
                         combined_group = np.vstack(
                             (missing_point_group[:-1], point_group[::-1])
                         )
-                        groups.append(combined_group)
+                    else:
                         continue
+                    groups.append(combined_group)
                 missing_point_groups.append(point_group)
 
         # first and last point should be the same
@@ -234,18 +233,18 @@ class Shape:
         line_length1 = self.get_line_length(line1)
         return abs(line_length0 - line_length1) / line_length0
 
-    def get_lines_and_arcs(self, angle_threshold: int = 0.1):
+    def get_lines_and_arcs(self, angle_threshold: float = 0.1):
         """
         Extract lines and arcs from an STL file \n
-        If the line length is less than 1, it is considered an arc.
-        If the line length for an arc is close to the previous arc length,
-        it is considered part of the previous arc. \n
+        If the line angle between two lines is close to 0 and 
+        the line length is close to the previous line length,
+        it is considered an arc. \n
         Note: This is not a robust algorithm.
 
         Parameters
         ----------
-        arc_threshold : int
-            Length threshold to determine if a line is an arc
+        angle_threshold : int
+            Angle threshold for arc
 
         Returns
         -------
