@@ -1,5 +1,6 @@
 from cnceye import Shape
 import cadquery as cq
+import pytest
 
 
 def test_are_facets_on_same_plane():
@@ -300,3 +301,167 @@ def test_with_a_small_model():
         _radius, center, is_circle = shape.get_arc_info(arc_points)
         # assert is_circle is True
         assert radius == _radius
+
+
+def test_with_a_prismatic_solid():
+    result = (
+        cq.Workplane("front")
+        .lineTo(2.0, 0)
+        .lineTo(2.0, 1.0)
+        .threePointArc((1.0, 1.5), (0.0, 1.0))
+        .close()
+        .extrude(0.25)
+    )
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 3
+    assert len(arcs[0]) == 1
+
+    for arc_points in arcs[0]:
+        _radius, center, is_circle = shape.get_arc_info(arc_points)
+        print(_radius, center, is_circle)
+
+
+def test_multiple_holes_inside_circle():
+    result = cq.Workplane("front").circle(
+        3.0
+    )  # current point is the center of the circle, at (0, 0)
+    result = result.center(1.5, 0.0).rect(0.5, 0.5)  # new work center is (1.5, 0.0)
+
+    result = result.center(-1.5, 1.5).circle(0.25)  # new work center is (0.0, 1.5).
+    # The new center is specified relative to the previous center, not global coordinates!
+
+    result = result.extrude(0.25)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 1
+    assert len(lines[0]) == 4
+    assert len(arcs[0]) == 2
+
+    for arc_points in arcs[0]:
+        _radius, center, is_circle = shape.get_arc_info(arc_points)
+        print(_radius, center, is_circle)
+
+
+def test_using_join_list():
+    r = cq.Workplane("front").circle(2.0)  # make base
+    r = r.pushPoints(
+        [(1.5, 0), (0, 1.5), (-1.5, 0), (0, -1.5)]
+    )  # now four points are on the stack
+    r = r.circle(0.25)  # circle will operate on all four points
+    result = r.extrude(0.125)  # make prism
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 0
+    assert len(arcs) == 1
+    assert len(arcs[0]) == 5
+
+    for arc_points in arcs[0]:
+        _radius, center, is_circle = shape.get_arc_info(arc_points)
+        print(_radius, center, is_circle)
+
+
+def test_polygons():
+    result = (
+        cq.Workplane("front")
+        .box(3.0, 4.0, 0.25)
+        .pushPoints([(0, 0.75), (0, -0.75)])
+        .polygon(6, 1.0)
+        .cutThruAll()
+    )
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 0
+    assert len(lines[0]) == 16
+
+
+def test_polylines():
+    (L, H, W, t) = (100.0, 20.0, 20.0, 1.0)
+    pts = [
+        (0, H / 2.0),
+        (W / 2.0, H / 2.0),
+        (W / 2.0, (H / 2.0 - t)),
+        (t / 2.0, (H / 2.0 - t)),
+        (t / 2.0, (t - H / 2.0)),
+        (W / 2.0, (t - H / 2.0)),
+        (W / 2.0, H / -2.0),
+        (0, H / -2.0),
+    ]
+    result = cq.Workplane("front").polyline(pts).mirrorY().extrude(L)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 0
+    assert len(lines[0]) == 12
+
+
+@pytest.mark.skip(reason="Not implemented yet")
+def test_spline():
+    s = cq.Workplane("XY")
+    sPnts = [
+        (2.75, 1.5),
+        (2.5, 1.75),
+        (2.0, 1.5),
+        (1.5, 1.0),
+        (1.0, 1.25),
+        (0.5, 1.0),
+        (0, 1.0),
+    ]
+    r = s.lineTo(3.0, 0).lineTo(3.0, 1.0).spline(sPnts, includeCurrent=True).close()
+    result = r.extrude(0.5)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) > 0
+    assert len(lines[0]) == 3
+
+
+def test_mirror_2D_geometry():
+    r = cq.Workplane("front").hLine(1.0)  # 1.0 is the distance, not coordinate
+    r = (
+        r.vLine(0.5).hLine(-0.25).vLine(-0.25).hLineTo(0.0)
+    )  # hLineTo allows using xCoordinate not distance
+    result = r.mirrorY().extrude(0.25)  # mirror the geometry and extrude
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 0
+    assert len(lines[0]) == 8
+
+
+def test_mirror_from_faces():
+    result = cq.Workplane("XY").line(0, 1).line(1, 0).line(0, -0.5).close().extrude(1)
+    result = result.mirror(result.faces(">X"), union=True)
+
+    stl_filename = "tests/fixtures/stl/cq/cadquery_model.stl"
+    cq.exporters.export(result, stl_filename)
+    shape = Shape(stl_filename)
+    lines, arcs = shape.get_lines_and_arcs()
+    assert len(lines) == 1
+    assert len(arcs) == 0
+    assert len(lines[0]) == 5
