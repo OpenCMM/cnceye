@@ -177,22 +177,26 @@ class Shape:
             else:
                 for missing_point_group in missing_point_groups:
                     if np.array_equal(missing_point_group[0], point_group[-1]):
-                        combined_group = np.vstack((point_group, missing_point_group))
+                        combined_group = np.vstack(
+                            (point_group, missing_point_group[1:])
+                        )
                         groups.append(combined_group)
                         continue
                     elif np.array_equal(missing_point_group[-1], point_group[0]):
-                        combined_group = np.vstack((missing_point_group, point_group))
+                        combined_group = np.vstack(
+                            (missing_point_group, point_group[1:])
+                        )
                         groups.append(combined_group)
                         continue
                     elif np.array_equal(missing_point_group[0], point_group[0]):
                         combined_group = np.vstack(
-                            (point_group[::-1], missing_point_group)
+                            (point_group[::-1], missing_point_group[1:])
                         )
                         groups.append(combined_group)
                         continue
                     elif np.array_equal(missing_point_group[-1], point_group[-1]):
                         combined_group = np.vstack(
-                            (missing_point_group, point_group[::-1])
+                            (missing_point_group[:-1], point_group[::-1])
                         )
                         groups.append(combined_group)
                         continue
@@ -281,8 +285,6 @@ class Shape:
                             arc_points = point_group[arc_start_idx : i + 1]
                             arc_group.append(arc_points)
                             arc_start_idx = None
-                            if i != len(point_group) - 3:
-                                line_group.append(line1)
                         else:
                             line_group.append(line0)
                         if i == len(point_group) - 3:
