@@ -138,18 +138,123 @@ class Shape:
                 new_arc_group.append(prev_points)
         return new_arc_group
 
-    def get_lines_and_arcs(self, arc_threshold: int = 1):
+    def connect_same_group(self, point_groups):
+        """
+        Connect point groups that are the same \n
+        Check if the first and last point are the same \n
+        """
+        groups = []
+        missing_point_groups = []
+        for point_group in point_groups:
+            if np.array_equal(point_group[0], point_group[-1]):
+                groups.append(point_group)
+            else:
+                found_pair = False
+                for missing_point_group in missing_point_groups:
+                    if np.array_equal(missing_point_group[0], point_group[-1]):
+                        combined_group = np.vstack(
+                            (point_group, missing_point_group[1:])
+                        )
+                    elif np.array_equal(missing_point_group[-1], point_group[0]):
+                        combined_group = np.vstack(
+                            (missing_point_group, point_group[1:])
+                        )
+                    elif np.array_equal(missing_point_group[0], point_group[0]):
+                        combined_group = np.vstack(
+                            (point_group[::-1], missing_point_group[1:])
+                        )
+                    elif np.array_equal(missing_point_group[-1], point_group[-1]):
+                        combined_group = np.vstack(
+                            (missing_point_group[:-1], point_group[::-1])
+                        )
+                    else:
+                        continue
+                    if np.array_equal(combined_group[0], combined_group[-1]):
+                        groups.append(combined_group)
+                        missing_point_groups.remove(missing_point_group)
+                    else:
+                        # replace missing_point_group with combined_group
+                        missing_point_groups.remove(missing_point_group)
+                        missing_point_groups.append(combined_group)
+                    found_pair = True
+                    break
+                if not found_pair:
+                    missing_point_groups.append(point_group)
+
+        # first and last point should be the same
+        for group in groups:
+            assert np.array_equal(group[0], group[-1])
+        return groups
+
+    def group_by_common_point(self, coplanar_shapes):
+        """
+        Group coplanar shapes by common point
+        """
+
+        def _get_point(_coplanar_shape):
+            point0 = self.mesh.vertices[_coplanar_shape[0]]
+            point1 = self.mesh.vertices[_coplanar_shape[1]]
+            return np.array([point0, point1])
+
+        point_groups = [_get_point(coplanar_shapes[0])]
+        for i in range(1, len(coplanar_shapes)):
+            point = _get_point(coplanar_shapes[i])
+
+            duplicate = False
+            for i in range(len(point_groups)):
+                point_group = point_groups[i]
+                first_and_last_point = np.array([point_group[0], point_group[-1]])
+                common_point = self.get_common_point(first_and_last_point, point)
+                if common_point is not None:
+                    mask = np.any(point != common_point, axis=1)
+                    new_point = point[mask]
+                    if np.array_equal(point_groups[i][-1], common_point):
+                        point_groups[i] = np.vstack((point_groups[i], new_point))
+                    else:
+                        point_groups[i] = np.vstack((new_point, point_groups[i]))
+                    duplicate = True
+                    break
+            if not duplicate:
+                point_groups.append(point)
+
+        return self.connect_same_group(point_groups)
+
+    def get_line_angle(self, line0: np.array, line1: np.array):
+        """
+        Get the angle between two lines
+        """
+        line0 = line0[1] - line0[0]
+        line1 = line1[1] - line1[0]
+        return np.arccos(
+            np.dot(line0, line1) / (np.linalg.norm(line0) * np.linalg.norm(line1))
+        )
+
+    def get_line_length(self, line: np.array):
+        """
+        Get the length of a line
+        """
+        return np.linalg.norm(line[1] - line[0])
+
+    def get_line_diff_percentage(self, line0: np.array, line1: np.array):
+        """
+        Get the difference in length between two lines
+        """
+        line_length0 = self.get_line_length(line0)
+        line_length1 = self.get_line_length(line1)
+        return abs(line_length0 - line_length1) / line_length0
+
+    def get_lines_and_arcs(self, angle_threshold: float = 0.1):
         """
         Extract lines and arcs from an STL file \n
-        If the line length is less than 1, it is considered an arc.
-        If the line length for an arc is close to the previous arc length,
-        it is considered part of the previous arc. \n
+        If the line angle between two lines is close to 0 and
+        the line length is close to the previous line length,
+        it is considered an arc. \n
         Note: This is not a robust algorithm.
 
         Parameters
         ----------
-        arc_threshold : int
-            Length threshold to determine if a line is an arc
+        angle_threshold : int
+            Angle threshold for arc
 
         Returns
         -------
@@ -162,38 +267,40 @@ class Shape:
         lines = []
         arcs = []
 
-        previous_length = 0
-        previous_arc_points = None
         for coplanar_shapes in shapes:
+            point_groups = self.group_by_common_point(coplanar_shapes)
             line_group = []
             arc_group = []
-            for i in range(len(coplanar_shapes)):
-                point0 = self.mesh.vertices[coplanar_shapes[i][0]]
-                point1 = self.mesh.vertices[coplanar_shapes[i][1]]
-                point = np.array([point0, point1])
-                line_length = np.linalg.norm(point0 - point1)
-                if line_length > arc_threshold:
-                    # line
-                    line_group.append(point)
-                else:
-                    # arc
-                    # if there is a common point and the length is
-                    # close to previous length, add to previous arc
-                    common_point = self.get_common_point(previous_arc_points, point)
-                    if common_point is not None and np.isclose(
-                        line_length, previous_length, atol=1e-3
+
+            for point_group in point_groups:
+                arc_start_idx = None
+                for i in range(len(point_group) - 2):
+                    line0 = np.array([point_group[i], point_group[i + 1]])
+                    line1 = np.array([point_group[i + 1], point_group[i + 2]])
+                    line_angle = self.get_line_angle(line0, line1)
+                    if (
+                        abs(line_angle) < angle_threshold
+                        and self.get_line_diff_percentage(line0, line1) < 0.01
                     ):
-                        mask = np.any(point != common_point, axis=1)
-                        new_point = point[mask]
-                        if np.array_equal(arc_group[-1][-1], common_point):
-                            arc_group[-1] = np.vstack((arc_group[-1], new_point))
+                        # arc
+                        if arc_start_idx is None:
+                            arc_start_idx = i
+                        elif i == len(point_group) - 3:
+                            arc_points = point_group[arc_start_idx:]
+                            arc_group.append(arc_points)
+                            arc_start_idx = None
                         else:
-                            arc_group[-1] = np.vstack((new_point, arc_group[-1]))
+                            continue
                     else:
-                        # new arc
-                        arc_group.append(point)
-                    previous_arc_points = point
-                previous_length = line_length
+                        # line
+                        if arc_start_idx is not None:
+                            arc_points = point_group[arc_start_idx : i + 1]
+                            arc_group.append(arc_points)
+                            arc_start_idx = None
+                        else:
+                            line_group.append(line0)
+                        if i == len(point_group) - 3:
+                            line_group.append(line1)
 
             if line_group:
                 lines.append(line_group)
